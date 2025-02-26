@@ -1,7 +1,9 @@
-# Tauri + Vanilla TS
+# Launcher
 
-This template should help get you started developing with Tauri in vanilla HTML, CSS and Typescript.
+> Minimal Fortnite launcher made for **Solaris**.
 
-## Recommended IDE Setup
+![image](https://github.com/user-attachments/assets/814f6826-065d-4cba-9dda-ffb99dceb29a)
 
-- [VS Code](https://code.visualstudio.com/) + [Tauri](https://marketplace.visualstudio.com/items?itemName=tauri-apps.tauri-vscode) + [rust-analyzer](https://marketplace.visualstudio.com/items?itemName=rust-lang.rust-analyzer)
+# Contribute
+
+We welcome contributions! If you'd like to help improve the application, please make fork and make a pull request!
