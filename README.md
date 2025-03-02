@@ -2,7 +2,7 @@
 
 > Minimal Fortnite launcher made for **Solaris**.
 
-![image](https://github.com/user-attachments/assets/814f6826-065d-4cba-9dda-ffb99dceb29a)
+![image](https://github.com/user-attachments/assets/bda388fe-6ca3-429c-b79c-65c53d2ab5d2)
 
 # Contribute
 
