@@ -1,7 +1,7 @@
 import axios, { AxiosError, AxiosResponse } from "axios";
 import { endpoints } from "@/api/config/endpoints";
-import { ResponseOrError } from "@/api/authentication/interfaces/ResponseOrError";
 import { Tauri } from "@/api/config/tauri";
+import { ResponseOrError } from "@/api/ResponseOrError";
 
 interface ExchangeCodeResponse {
   code: string;

@@ -1,8 +1,8 @@
 import axios, { AxiosError, AxiosResponse } from "axios";
 import { endpoints } from "@/api/config/endpoints";
-import { ResponseOrError } from "@/api/authentication/interfaces/ResponseOrError";
 import { Tauri } from "@/api/config/tauri";
 import { AuthResponse } from "@/api/authentication/interfaces/AuthResponse";
+import { ResponseOrError } from "@/api/ResponseOrError";
 
 export const generateAccountResponse = async (
   code: string
