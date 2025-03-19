@@ -1,4 +1,4 @@
-const baseUrl = "https://avalon-external-api.solarisfn.org";
+const baseUrl = "https://horizon-testing.solarisfn.org";
 
 export const endpoints = {
   // login

@@ -24,12 +24,12 @@ export default function Home() {
                                     <img
                                         src={
                                             auth?.athena?.favorite_character
-                                                ? `https://fortnite-api.com/images/cosmetics/br/${auth.athena?.favorite_character}/icon.png`
-                                                : `https://fortnite-api.com/images/cosmetics/br/${auth.athena?.favorite_character}/smallicon.png`
+                                                ? `https://fortnite-api.com/images/cosmetics/br/${auth.athena?.favorite_character.replace("_solaris", "")}/icon.png`
+                                                : `https://fortnite-api.com/images/cosmetics/br/${auth.athena?.favorite_character.replace("_solaris", "")}/smallicon.png`
                                         }
                                         onError={(e) => {
                                             e.currentTarget.onerror = null
-                                            e.currentTarget.src = `https://fortnite-api.com/images/cosmetics/br/${auth.athena?.favorite_character}/smallicon.png`
+                                            e.currentTarget.src = `https://fortnite-api.com/images/cosmetics/br/${auth.athena?.favorite_character.replace("_solaris", "")}/smallicon.png`
                                         }}
                                         className="rounded-xs scale-x-[-1]"
                                         style={{

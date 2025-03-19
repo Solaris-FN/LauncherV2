@@ -13,7 +13,8 @@ export default async function NotFound() {
                             className="h-20 w-auto object-contain"
                         />
                     </div>
-                    <h1 className="text-2xl font-lg">Page Not Found</h1>
+                    <h1 className="text-xl font-md text-white mb-4">Page Not Found</h1>
+                    <p className="text-md text-gray-300">Sorry, this page does not exist.</p>
                 </div>
             </div>
         </div>
