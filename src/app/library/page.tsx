@@ -83,6 +83,8 @@ export default function Library() {
                 className="flex-grow p-8 justify-center min-h-screen"
             >
                 <div className="max-w-6xl mx-auto">
+                    <h1 className="text-3xl font-bold text-white mt-3">Library</h1>
+
                     <br></br>
                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-3 gap-8">
                         {builds.map((build, index) => {

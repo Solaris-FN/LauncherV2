@@ -4,6 +4,7 @@ import Sidebar from "@/components/core/SideBar"
 import NewsSection from "@/components/home/NewsSection"
 import StatisticsSection from "@/components/home/StatisticsSection"
 import { FaUserFriends } from "react-icons/fa"
+import { motion, AnimatePresence } from "framer-motion";
 
 export default function Home() {
     const auth = useAuth()
@@ -11,9 +12,13 @@ export default function Home() {
     return (
         <div className="flex min-h-screen">
             <Sidebar page={{ page: "Home" }} />
-
-            <div className="flex-1 flex flex-col mt-3">
+            <motion.main
+                initial={{ opacity: 0, scale: 0.98 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.25, ease: "easeOut" }}
+                className="flex-1 flex flex-col mt-3">
                 <div className="flex justify-between items-start p-6">
+                    <h1 className="text-3xl font-bold text-white mt-3">Home</h1>
                     <div className="items-center justify-center space-x-2 shadow-lg backdrop-blur-sm">
 
                     </div>
@@ -62,7 +67,7 @@ export default function Home() {
                         <StatisticsSection />
                     </div>
                 </div>
-            </div>
+            </motion.main>
         </div>
     )
 }
