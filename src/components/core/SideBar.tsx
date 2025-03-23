@@ -1,4 +1,5 @@
 "use client"
+
 import { HiOutlineHome, HiOutlineCog, HiOutlineFolder, HiOutlineDownload, HiOutlineShoppingCart } from "react-icons/hi"
 import { useRouter } from "next/navigation"
 import Image from "next/image"
@@ -6,16 +7,35 @@ import { useEffect, useState } from "react"
 
 export default function Sidebar({ page }: { page: { page: string } }) {
     const router = useRouter()
-    const [isCollapsed, setIsCollapsed] = useState(true)
+    const [isCollapsed, setIsCollapsed] = useState(false)
+    const [isLoaded, setIsLoaded] = useState(false)
 
     useEffect(() => {
-        const handleResize = () => {
-            setIsCollapsed(window.innerWidth < 768)
+        const savedState = localStorage.getItem("sidebar")
+
+        if (savedState !== null) {
+            setIsCollapsed(savedState === "true")
         }
+
+        setIsLoaded(true)
+
+        const handleResize = () => {
+            if (savedState === null) {
+                setIsCollapsed(window.innerWidth < 768)
+            }
+        }
+
         handleResize()
+
         window.addEventListener("resize", handleResize)
         return () => window.removeEventListener("resize", handleResize)
     }, [])
+
+    useEffect(() => {
+        if (isLoaded) {
+            localStorage.setItem("sidebar", isCollapsed.toString())
+        }
+    }, [isCollapsed, isLoaded])
 
     const frameUpdate = (route: string) => {
         router.push("/" + route)
@@ -47,9 +67,15 @@ export default function Sidebar({ page }: { page: { page: string } }) {
             : "ml-3 text-gray-400 text-sm transition-all duration-300 group-hover:text-gray-300"
     }
 
+    if (!isLoaded) {
+        return <div className="h-screen bg-gradient-to-b from-[#0E0316] to-[#110418]"></div>
+    }
+
     return (
         <div className="h-screen">
-            <aside className={`${isCollapsed ? "w-20" : "w-56"} bg-gradient-to-b from-[#0E0316] to-[#110418] h-full shadow-xl transition-all duration-300 relative flex flex-col px-3 py-4`}>
+            <aside
+                className={`${isCollapsed ? "w-20" : "w-56"} bg-gradient-to-b from-[#0E0316] to-[#110418] h-full shadow-xl transition-all duration-300 relative flex flex-col px-3 py-4`}
+            >
                 <div className="flex justify-center mb-12">
                     <Image
                         src="/Solarislogo.png"
@@ -60,18 +86,14 @@ export default function Sidebar({ page }: { page: { page: string } }) {
                     />
                 </div>
 
-                <nav className={`flex flex-col gap-1.5 w-full transition-all duration-300 ${isCollapsed ? "mt-[16vh]" : "mt-1"
-                    }`}>
+                <nav
+                    className={`flex flex-col gap-1.5 w-full transition-all duration-300 ${isCollapsed ? "mt-[16vh]" : "mt-1"}`}
+                >
                     {navItems.map((item) => (
                         <div key={item.route} className={getItemClassName(item.route)}>
-                            <button
-                                className="flex items-center w-full ml-1.5"
-                                onClick={() => frameUpdate(item.path)}
-                            >
+                            <button className="flex items-center w-full ml-1.5" onClick={() => frameUpdate(item.path)}>
                                 <item.icon className={getIconClassName(item.route)} />
-                                <span className={`${getLabelClass(item.route)} ${isCollapsed ? "hidden" : "block"}`}>
-                                    {item.label}
-                                </span>
+                                <span className={`${getLabelClass(item.route)} ${isCollapsed ? "hidden" : "block"}`}>{item.label}</span>
                             </button>
                         </div>
                     ))}
@@ -79,14 +101,9 @@ export default function Sidebar({ page }: { page: { page: string } }) {
 
                 <div className="mt-auto space-y-3">
                     <div className={getItemClassName("Settings")}>
-                        <button
-                            className="flex items-center w-full ml-1.5"
-                            onClick={() => frameUpdate("settings")}
-                        >
+                        <button className="flex items-center w-full ml-1.5" onClick={() => frameUpdate("settings")}>
                             <HiOutlineCog className={getIconClassName("Settings")} />
-                            <span className={`${getLabelClass("Settings")} ${isCollapsed ? "hidden" : "block"}`}>
-                                Settings
-                            </span>
+                            <span className={`${getLabelClass("Settings")} ${isCollapsed ? "hidden" : "block"}`}>Settings</span>
                         </button>
                     </div>
 
@@ -117,3 +134,4 @@ export default function Sidebar({ page }: { page: { page: string } }) {
         </div>
     )
 }
+

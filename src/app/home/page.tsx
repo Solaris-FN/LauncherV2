@@ -2,6 +2,7 @@
 import useAuth from "@/api/authentication/zustand/state"
 import Sidebar from "@/components/core/SideBar"
 import NewsSection from "@/components/home/NewsSection"
+import StatisticsSection from "@/components/home/StatisticsSection"
 import { FaUserFriends } from "react-icons/fa"
 
 export default function Home() {
@@ -53,8 +54,13 @@ export default function Home() {
                     </div>
                 </div>
 
-                <div className="px-5 pb-3 w-full rounded-lg">
+                <div className="px-5 pb-3 w-full rounded-lg mb-6 mt-2">
                     <NewsSection />
+                </div>
+                <div className="px-5 pb-3 w-full rounded-lg">
+                    <div className="flex-grow mr-6">
+                        <StatisticsSection />
+                    </div>
                 </div>
             </div>
         </div>

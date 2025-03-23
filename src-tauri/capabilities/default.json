@@ -2,7 +2,9 @@
   "$schema": "../gen/schemas/desktop-schema.json",
   "identifier": "default",
   "description": "enables the default permissions",
-  "windows": ["main"],
+  "windows": [
+    "main"
+  ],
   "permissions": [
     "core:default",
     "core:window:allow-create",
@@ -40,6 +42,8 @@
     "core:webview:allow-print",
     "shell:default",
     "dialog:default",
-    "notification:default"
+    "notification:default",
+    "notification:default",
+    "dialog:default"
   ]
 }
