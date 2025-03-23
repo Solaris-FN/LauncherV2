@@ -34,9 +34,21 @@ export default function FriendsSection() {
                     return {
                         id: friend.username || friend.resource,
                         name: joinInfoData?.sourceDisplayName || "Unknown",
-                        color: friend.online ? "from-green-500 to-green-600" : "from-gray-500 to-gray-600",
+                        color: friend.online
+                            ? "from-green-500 to-green-600"
+                            : friend.away
+                                ? "from-yellow-500 to-yellow-600"
+                                : friend.busy
+                                    ? "from-red-500 to-red-600"
+                                    : "from-gray-500 to-gray-600",
                         status: friend.status?.[0]?.Status || "Offline",
-                        presence: friend.online ? "online" : "offline",
+                        presence: friend.online
+                            ? "online"
+                            : friend.away
+                                ? "away"
+                                : friend.busy
+                                    ? "busy"
+                                    : "offline",
                     };
                 });
 
