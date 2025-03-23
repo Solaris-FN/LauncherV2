@@ -53,10 +53,6 @@ export default function Home() {
                                 <h3 className="font-medium text-white">{auth.user?.displayName}</h3>
                                 <span className="text-xs text-gray-300">Online</span>
                             </div>
-                            <div className="rounded-xl bg-[#2a1e36]/60 ml-7 p-4 h-12 flex items-center justify-center space-x-2 shadow-lg backdrop-blur-sm">
-                                <FaUserFriends size={20} className="text-white" />
-                                <p className="text-white text-sm font-medium">0/0</p>
-                            </div>
                         </div>
                     </div>
                 </div>
