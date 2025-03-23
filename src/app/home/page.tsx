@@ -1,10 +1,12 @@
 "use client"
+
 import useAuth from "@/api/authentication/zustand/state"
 import Sidebar from "@/components/core/SideBar"
 import NewsSection from "@/components/home/NewsSection"
 import StatisticsSection from "@/components/home/StatisticsSection"
 import { FaUserFriends } from "react-icons/fa"
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
+import FriendsSection from "@/components/home/FriendsSection"
 
 export default function Home() {
     const auth = useAuth()
@@ -62,9 +64,12 @@ export default function Home() {
                 <div className="px-5 pb-3 w-full rounded-lg mb-6 mt-2">
                     <NewsSection />
                 </div>
-                <div className="px-5 pb-3 w-full rounded-lg">
+                <div className="px-5 pb-3 w-full rounded-lg flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-2">
                     <div className="flex-grow mr-6">
                         <StatisticsSection />
+                    </div>
+                    <div>
+                        <FriendsSection />
                     </div>
                 </div>
             </motion.main>
