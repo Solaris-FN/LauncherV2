@@ -1,5 +1,6 @@
 "use client"
 
+import useAuth from "@/api/authentication/zustand/state"
 import React from "react"
 
 type Friend = {
@@ -11,15 +12,42 @@ type Friend = {
 }
 
 export default function FriendsSection() {
-    const [friends] = React.useState<Friend[]>([
-        {
-            id: "1",
-            name: "Itztiva",
-            color: "from-purple-600 to-purple-700",
-            status: "Playing Battle Royale - Solo - 2 Left",
-            presence: "online",
-        },
-    ])
+    const auth = useAuth();
+    if (!auth.user) return null;
+    const [friends, setFriends] = React.useState<Friend[]>([]);
+
+    React.useEffect(() => {
+        const fetchFriends = async () => {
+            try {
+                const response = await fetch(`http://synapse.solarisfn.org:4040/friends/status/${auth.user?.accountId}`);
+                const data = await response.json();
+
+                const mappedFriends = data.map((friend: any) => {
+                    const joinInfoDataKey = Object.keys(friend.status?.[0]?.Properties || {}).find(key =>
+                        key.startsWith("party.joininfodata")
+                    );
+
+                    const joinInfoData = joinInfoDataKey
+                        ? friend.status?.[0]?.Properties?.[joinInfoDataKey]
+                        : null;
+
+                    return {
+                        id: friend.username || friend.resource,
+                        name: joinInfoData?.sourceDisplayName || "Unknown",
+                        color: friend.online ? "from-green-500 to-green-600" : "from-gray-500 to-gray-600",
+                        status: friend.status?.[0]?.Status || "Offline",
+                        presence: friend.online ? "online" : "offline",
+                    };
+                });
+
+                setFriends(mappedFriends);
+            } catch (error) {
+                console.error("Failed to fetch friends:", error);
+            }
+        };
+
+        fetchFriends();
+    }, [auth.user.accountId]);
 
     const getPresenceColor = (presence: string) => {
         switch (presence) {
@@ -40,12 +68,14 @@ export default function FriendsSection() {
         <div className="w-[450px] rounded-lg border border-[#3d2a4f]/50 bg-[#2a1e36]/40 p-3 text-white shadow-lg backdrop-blur-sm">
             <div className="mb-1.5 flex items-center justify-between">
                 <h2 className="text-base font-bold text-gray-300">Online Friends</h2>
-                <span className="text-xs text-gray-300">1 of 1</span>
+                <span className="text-xs text-gray-300">
+                    {friends.filter(friend => friend.presence === "online").length} of {friends.length}
+                </span>
             </div>
 
             <div className="custom-scrollbar max-h-[153px] overflow-y-auto pr-1">
                 <div className="flex flex-col space-y-1.5">
-                    {friends.map((friend) => (
+                    {friends.filter(friend => friend.presence !== "offline" && friend.name !== "Unknown").map((friend) => (
                         <div
                             key={friend.id}
                             className="group flex w-full items-center rounded-md bg-gradient-to-r from-[#2a1e36]/80 to-[#332542]/80 px-3 py-2 transition-all duration-200 hover:from-[#2a1e36]/90 hover:to-[#332542]/90 hover:shadow-md"
