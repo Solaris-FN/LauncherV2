@@ -158,7 +158,7 @@ fn find_end(data: &[u8]) -> Option<usize> {
 }
 
 #[tauri::command]
-fn rich_presence(username: String, _character: String) {
+fn rich_presence(username: String, character: String) {
     let client = DeclarativeDiscordIpcClient::new("1229597606133497938");
 
     client.enable();
@@ -175,6 +175,7 @@ fn rich_presence(username: String, _character: String) {
             .timestamps(timestamp)
             .details(&format!("Logged in as {}", username))
             .assets(Assets::new().large_image("embedded_cover"))
+            .assets(Assets::new().small_image(&character))
     );
 }
 

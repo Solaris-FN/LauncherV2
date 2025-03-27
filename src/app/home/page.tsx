@@ -18,7 +18,7 @@ export default function Home() {
             if (auth.token !== "") {
                 await invoke("rich_presence", {
                     username: auth.user?.displayName,
-                    character: auth.athena?.favorite_character
+                    character: `https://fortnite-api.com/images/cosmetics/br/cid_423_athena_commando_f_painter/icon.png`
                 })
             }
         }
@@ -43,7 +43,7 @@ export default function Home() {
                     <div className="rounded-xl bg-[#2a1e36]/40 shadow-lg backdrop-blur-sm border border-[#3d2a4f]/50 p-3 w-64">
                         <div className="flex items-center gap-3">
                             <div className="relative">
-                                <div className="h-10 w-10 rounded-full overflow-hidden bg-gray-200 flex items-center justify-center">
+                                <div className="h-10 w-10 rounded-full overflow-hidden flex items-center justify-center">
                                     <img
                                         src={
                                             auth?.athena?.favorite_character
