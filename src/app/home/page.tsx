@@ -7,9 +7,24 @@ import StatisticsSection from "@/components/home/StatisticsSection"
 import { FaUserFriends } from "react-icons/fa"
 import { motion } from "framer-motion";
 import FriendsSection from "@/components/home/FriendsSection"
+import { useEffect } from "react"
+import { invoke } from "@tauri-apps/api/core"
 
 export default function Home() {
     const auth = useAuth()
+
+    useEffect(() => {
+        const rpc = async () => {
+            if (auth.token !== "") {
+                await invoke("rich_presence", {
+                    username: auth.user?.displayName,
+                    character: auth.athena?.favorite_character
+                })
+            }
+        }
+
+        rpc();
+    }, []);
 
     return (
         <div className="flex min-h-screen">

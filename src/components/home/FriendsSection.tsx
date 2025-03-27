@@ -79,7 +79,7 @@ export default function FriendsSection() {
     return (
         <div className="w-[450px] rounded-lg border border-[#3d2a4f]/50 bg-[#2a1e36]/40 p-3 text-white shadow-lg backdrop-blur-sm">
             <div className="mb-1.5 flex items-center justify-between">
-                <h2 className="text-base font-bold text-gray-300">Online Friends</h2>
+                <h2 className="text-base font-bold text-gray-300">Friends</h2>
                 <span className="text-xs text-gray-300">
                     {friends.filter(friend => friend.presence === "online").length} of {friends.length}
                 </span>
@@ -113,7 +113,7 @@ export default function FriendsSection() {
                         ))}
                     </div>
                 ) : (
-                    <div className="text-center text-sm text-gray-400">
+                    <div className="text-center text-sm text-[#d8c4ff]">
                         No friends online, Check back later!
                     </div>
                 )}
