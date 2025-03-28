@@ -16,10 +16,33 @@ export default function Home() {
     useEffect(() => {
         const rpc = async () => {
             if (auth.token !== "") {
+                const characterId = auth.athena?.favorite_character.replace("_solaris", "") ?? "";
+                const primaryImage = `https://fortnite-api.com/images/cosmetics/br/${characterId}/icon.png`;
+                const smallIcon = `https://fortnite-api.com/images/cosmetics/br/${characterId}/smallicon.png`;
+                const fallbackImage = `https://cdn.solarisfn.org/Icons/${characterId}.png`;
+
+                const checkImage = async (url: string) => {
+                    try {
+                        const response = await fetch(url, { method: "HEAD" });
+                        return response.ok;
+                    } catch {
+                        return false;
+                    }
+                };
+
+                let validImage = primaryImage;
+                if (!(await checkImage(primaryImage))) {
+                    if (await checkImage(smallIcon)) {
+                        validImage = smallIcon;
+                    } else {
+                        validImage = fallbackImage;
+                    }
+                }
+
                 await invoke("rich_presence", {
                     username: auth.user?.displayName,
-                    character: `https://fortnite-api.com/images/cosmetics/br/cid_423_athena_commando_f_painter/icon.png`
-                })
+                    character: validImage
+                });
             }
         }
 
@@ -57,7 +80,6 @@ export default function Home() {
                                             else if (currentSrc.includes('/smallicon.png')) {
                                                 e.currentTarget.src = `https://cdn.solarisfn.org/Icons/${characterId}.png`;
                                             }
-
                                         }}
                                         className="rounded-xs scale-x-[-1]"
                                         style={{
