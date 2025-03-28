@@ -51,7 +51,6 @@ export default function Home() {
                                             const characterId = auth.athena?.favorite_character.replace("_solaris", "") ?? "";
 
                                             if (currentSrc.includes('/icon.png')) {
-                                                console.log("Primary image failed, trying smallicon");
                                                 e.currentTarget.src = `https://fortnite-api.com/images/cosmetics/br/${characterId}/smallicon.png`;
                                             }
                                             else if (currentSrc.includes('/smallicon.png')) {
