@@ -45,14 +45,73 @@ export default function Home() {
                             <div className="relative">
                                 <div className="h-10 w-10 rounded-full overflow-hidden flex items-center justify-center">
                                     <img
-                                        src={
-                                            auth?.athena?.favorite_character
-                                                ? `https://fortnite-api.com/images/cosmetics/br/${auth.athena?.favorite_character.replace("_solaris", "")}/icon.png`
-                                                : `https://fortnite-api.com/images/cosmetics/br/${auth.athena?.favorite_character.replace("_solaris", "")}/smallicon.png`
-                                        }
+                                        src={`https://fortnite-api.com/images/cosmetics/br/${auth.athena?.favorite_character.replace("_solaris", "")}/icon.png`}
                                         onError={(e) => {
-                                            e.currentTarget.onerror = null
-                                            e.currentTarget.src = `https://fortnite-api.com/images/cosmetics/br/${auth.athena?.favorite_character.replace("_solaris", "")}/smallicon.png`
+                                            const currentSrc = e.currentTarget.src;
+                                            const characterId = auth.athena?.favorite_character.replace("_solaris", "") ?? "";
+
+                                            if (currentSrc.includes('/icon.png')) {
+                                                console.log("Primary image failed, trying smallicon");
+                                                e.currentTarget.src = `https://fortnite-api.com/images/cosmetics/br/${characterId}/smallicon.png`;
+                                            }
+                                            else if (currentSrc.includes('/smallicon.png')) {
+                                                const dictionary = new Set([
+                                                    "character", "speed", "dial", "stallion", "aviator", "sun", "beam",
+                                                    "twilight", "spot", "shine", "weave", "harbor", "wild", "cat", "cactus",
+                                                    "rocker", "cereal", "box", "clash", "assassin", "craft", "glue",
+                                                    "esmeralda", "christmas", "firth", "angel", "shadow", "grand", "scheme",
+                                                    "kelp", "linen", "calcium", "mech", "pilot", "shark", "power", "farmer",
+                                                    "shade", "armadillo", "robot", "boom", "shot", "blam", "cj", "crazy",
+                                                    "eight", "dark", "ninja", "white", "division", "eternity", "fairy", "flex",
+                                                    "galaxy", "team", "leader", "golden", "accomplishment", "grumble", "woof",
+                                                    "hip", "hare", "ihaditog", "ice", "retreat", "ink", "demon", "jade",
+                                                    "towel", "gloss", "master", "mind", "mecha", "shady", "zero", "meteor",
+                                                    "man", "remix", "women", "nana", "split", "nike", "pros", "pastel",
+                                                    "glaze", "gift", "pizza", "bear"
+                                                ]);
+
+                                                function segmentString(s: string, dict: Set<string>): string[] | null {
+                                                    const n = s.length;
+                                                    const dp: (number[][] | null)[] = new Array(n + 1).fill(null).map(() => []);
+                                                    dp[0] = [];
+                                                    for (let i = 0; i < n; i++) {
+                                                        if (dp[i] === null) continue;
+                                                        for (let j = i + 1; j <= n; j++) {
+                                                            const word = s.slice(i, j);
+                                                            if (dict.has(word)) {
+                                                                if (dp[j] === null) dp[j] = [];
+                                                                dp[j]!.push([i]);
+                                                            }
+                                                        }
+                                                    }
+                                                    if (dp[n] === null) return null;
+
+                                                    const result: string[] = [];
+                                                    let idx = n;
+                                                    while (idx > 0) {
+                                                        const prevIdx = dp[idx]![0][0];
+                                                        result.unshift(s.slice(prevIdx, idx));
+                                                        idx = prevIdx;
+                                                    }
+                                                    return result;
+                                                }
+
+                                                function toPascalCase(str: string): string {
+                                                    return str.split('_').map(part => {
+                                                        if (part === part.toLowerCase()) {
+                                                            const words = segmentString(part, dictionary);
+                                                            if (words) {
+                                                                return words.map(word => word.charAt(0).toUpperCase() + word.slice(1)).join('');
+                                                            }
+                                                        }
+                                                        return part.charAt(0).toUpperCase() + part.slice(1);
+                                                    }).join('_');
+                                                }
+
+                                                const pascalCaseId = toPascalCase(characterId);
+                                                e.currentTarget.src = `https://cdn.solarisfn.org/Icons/${pascalCaseId}.png`;
+                                            }
+
                                         }}
                                         className="rounded-xs scale-x-[-1]"
                                         style={{

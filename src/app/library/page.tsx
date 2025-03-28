@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Trash2, Plus, Loader2, X } from "lucide-react";
+import { Trash2, Plus, Loader2, X } from 'lucide-react';
 import { motion, AnimatePresence } from "framer-motion";
 import useBuilds from "@/modules/zustand/library/useBuilds";
 import { HiPause, HiPlay, HiPlus, HiTrash } from "react-icons/hi";
@@ -15,6 +15,11 @@ export default function Library() {
     const [hoveredBuild, setHoveredBuild] = useState<string | null>(null);
     const [isAddHovered, setIsAddHovered] = useState(false);
     const [handlers, setHandlers] = useState<any>(null);
+    const [isDownloadModalOpen, setIsDownloadModalOpen] = useState(false);
+    const [downloadProgress, setDownloadProgress] = useState<{ files: string[], completed: string[] }>({
+        files: [],
+        completed: []
+    });
 
     useEffect(() => {
         if (typeof window === "undefined") {
@@ -47,13 +52,22 @@ export default function Library() {
 
     const handlelaunchBuild = async (path: string, version: string) => {
         if (handlers && handlers.handleLaunchBuild) {
-            await handlers.handleLaunchBuild(
-                path,
-                version,
-                activeBuild,
-                setActiveBuild,
-                setIsDialogOpen
-            );
+            if (activeBuild === path) {
+                setIsDialogOpen(true);
+            } else {
+                setDownloadProgress({ files: [], completed: [] });
+                setIsDownloadModalOpen(true);
+
+                await handlers.handleLaunchBuild(
+                    path,
+                    version,
+                    activeBuild,
+                    setActiveBuild,
+                    setIsDialogOpen,
+                    setDownloadProgress,
+                    setIsDownloadModalOpen
+                );
+            }
         }
     };
 
@@ -109,7 +123,7 @@ export default function Library() {
                                     >
                                         <div className="relative">
                                             <img
-                                                src={build.splash}
+                                                src={build.splash || "/placeholder.svg"}
                                                 alt={`Splash: ${build.version}`}
                                                 className="w-full h-40 object-cover object-top"
                                                 width={240}
@@ -200,7 +214,7 @@ export default function Library() {
                         animate={{ scale: 1, opacity: 1 }}
                         exit={{ scale: 0.9, opacity: 0 }}
                         transition={{ type: "spring", damping: 15, stiffness: 300 }}
-                        className="bg-slate-900/70 p-6 rounded-lg max-w-sm w-full mx-4 relative overflow-hidden"
+                        className="bg-[#2a1e36]/40 shadow-lg backdrop-blur-sm border border-[#3d2a4f]/50 p-6 rounded-lg max-w-sm w-full mx-4 relative overflow-hidden"
                     >
                         <div className="absolute inset-0 bg-gradient-to-br from-red-500/20 to-orange-500/20 opacity-30" />
                         <button
@@ -226,6 +240,61 @@ export default function Library() {
                             >
                                 Close Game
                             </button>
+                        </div>
+                    </motion.div>
+                </motion.div>
+            )}
+            {isDownloadModalOpen && (
+                <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    className="fixed inset-0 bg-black bg-opacity-20 backdrop-blur-sm flex items-center justify-center z-50"
+                >
+                    <motion.div
+                        initial={{ scale: 0.9, opacity: 0 }}
+                        animate={{ scale: 1, opacity: 1 }}
+                        exit={{ scale: 0.9, opacity: 0 }}
+                        transition={{ type: "spring", damping: 15, stiffness: 300 }}
+                        className="bg-[#2a1e36]/40 shadow-lg backdrop-blur-sm border border-[#3d2a4f]/50 p-6 rounded-lg max-w-md w-full mx-4 relative overflow-hidden"
+                    >
+                        <div className="absolute inset-0 bg-[#2a1e36]/40 shadow-lg backdrop-blur-sm border border-[#3d2a4f]/50 opacity-30" />
+                        <h2 className="text-2xl font-bold mb-4 text-white relative z-10">Downloading Files</h2>
+                        <div className="mb-4 relative z-10">
+                            <div className="h-1 w-full bg-gray-700 rounded-full overflow-hidden">
+                                <div
+                                    className="h-full bg-purple-500 transition-all duration-300 ease-out"
+                                    style={{
+                                        width: `${downloadProgress.files.length > 0 ?
+                                            (downloadProgress.completed.length / downloadProgress.files.length) * 100 : 0}%`
+                                    }}
+                                ></div>
+                            </div>
+                            <p className="text-gray-300 mt-2 text-sm">
+                                {downloadProgress.completed.length}/{downloadProgress.files.length} files
+                            </p>
+                        </div>
+                        <div className="max-h-48 overflow-y-auto mb-4 relative z-10">
+                            {downloadProgress.files.map((file, index) => (
+                                <div key={index} className="flex items-center py-1">
+                                    <div className="mr-2">
+                                        {downloadProgress.completed.includes(file) ? (
+                                            <div className="w-4 h-4 rounded-full bg-green-500 flex items-center justify-center">
+                                                <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
+                                                </svg>
+                                            </div>
+                                        ) : (
+                                            <div className="w-4 h-4 rounded-full border border-gray-500 flex items-center justify-center">
+                                                <Loader2 className="w-3 h-3 text-gray-400 animate-spin" />
+                                            </div>
+                                        )}
+                                    </div>
+                                    <span className={`text-sm ${downloadProgress.completed.includes(file) ? 'text-gray-400' : 'text-white'}`}>
+                                        {file}
+                                    </span>
+                                </div>
+                            ))}
                         </div>
                     </motion.div>
                 </motion.div>

@@ -1,18 +1,51 @@
 import { invoke } from "@tauri-apps/api/core";
 import { handleAddBuild as addbuild } from "@/modules/next/library/addbuild";
+import {
+  getFilesToProcess,
+  launchBuild,
+  processFiles,
+  processFilesWithProgress,
+} from "./launch";
 
 export const handleLaunchBuild = async (
   path: string,
   version: string,
   activeBuild: string,
   setActiveBuild: Function,
-  setIsDialogOpen: Function
+  setIsDialogOpen: Function,
+  setDownloadProgress: Function,
+  setIsDownloadModalOpen: Function
 ) => {
   if (activeBuild === path) {
     setIsDialogOpen(true);
   } else {
-    setActiveBuild(path);
-    //   await launchBuild(path, version);
+    try {
+      const filesToProcess = await getFilesToProcess(version);
+
+      if (filesToProcess.length > 0) {
+        setDownloadProgress({
+          files: filesToProcess.map((f) => f.name),
+          completed: [],
+        });
+
+        await processFilesWithProgress(
+          path,
+          version,
+          filesToProcess,
+          setDownloadProgress
+        );
+      } else {
+        await processFiles(version);
+      }
+
+      setIsDownloadModalOpen(false);
+
+      setActiveBuild(path);
+      await launchBuild(path, version);
+    } catch (error) {
+      console.error("Error during build launch:", error);
+      setIsDownloadModalOpen(false);
+    }
   }
 };
 
