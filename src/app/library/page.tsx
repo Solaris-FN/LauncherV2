@@ -242,7 +242,8 @@ export default function Library() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm"
+          >
             <motion.div
               initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
@@ -253,7 +254,8 @@ export default function Library() {
                 stiffness: 300,
               }}
               className="relative mx-4 w-full max-w-md overflow-hidden rounded-xl border border-[#3d2a4f]/50 bg-[#2a1e36]/80 p-6 shadow-xl backdrop-blur-md"
-              onClick={(e) => e.stopPropagation()}>
+              onClick={(e) => e.stopPropagation()}
+            >
               <div className="absolute inset-0 opacity-5">
                 <div className="absolute -top-20 -right-20 h-40 w-40 rounded-full border border-purple-300/10" />
                 <div className="absolute top-40 -left-20 h-60 w-60 rounded-full border border-purple-300/10" />
@@ -266,7 +268,8 @@ export default function Library() {
                   {downloadProgress.completed.length === downloadProgress.files.length && (
                     <button
                       onClick={() => setIsDownloadModalOpen(false)}
-                      className="rounded-full p-1 text-gray-400 transition-colors hover:bg-[#3d2a4f]/50 hover:text-white">
+                      className="rounded-full p-1 text-gray-400 transition-colors hover:bg-[#3d2a4f]/50 hover:text-white"
+                    >
                       <X className="h-5 w-5" />
                     </button>
                   )}
@@ -280,9 +283,8 @@ export default function Library() {
                     <span className="text-xs text-gray-400">
                       {Math.round(
                         downloadProgress.files.length > 0
-                          ? (downloadProgress.completed.length / downloadProgress.files.length) *
-                          100
-                          : 0
+                          ? (downloadProgress.completed.length / downloadProgress.files.length) * 100
+                          : 0,
                       )}
                       % complete
                     </span>
@@ -293,8 +295,7 @@ export default function Library() {
                       initial={{ width: 0 }}
                       animate={{
                         width: `${downloadProgress.files.length > 0
-                          ? (downloadProgress.completed.length / downloadProgress.files.length) *
-                          100
+                          ? (downloadProgress.completed.length / downloadProgress.files.length) * 100
                           : 0
                           }%`,
                       }}
@@ -304,28 +305,40 @@ export default function Library() {
                   </div>
                 </div>
 
-                <div className="max-h-60 overflow-y-auto rounded-lg bg-[#1a1424]/50 p-2">
-                  <AnimatePresence initial={false}>
-                    {downloadProgress.files.map((file, index) => {
-                      const isCompleted = downloadProgress.completed.includes(file);
-                      const fileExtension = file.split(".").pop();
-                      const downloadSpeed = downloadProgress.speeds?.[file] || 0;
-                      const progress = downloadProgress.progress?.[file] || 0;
-                      const statusMessage = downloadProgress.messages?.[file] || "";
-                      const isError = statusMessage.startsWith("Error");
+                <div className="rounded-lg bg-[#1a1424]/50 p-2">
+                  <AnimatePresence mode="wait">
+                    {downloadProgress.files.map((file) => {
+                      const isCurrentFile =
+                        !downloadProgress.completed.includes(file) &&
+                        downloadProgress.files.indexOf(file) ===
+                        downloadProgress.files.findIndex((f) => !downloadProgress.completed.includes(f))
+
+                      const isLastCompleted =
+                        downloadProgress.completed.length === downloadProgress.files.length &&
+                        file === downloadProgress.files[downloadProgress.files.length - 1]
+
+                      if (!isCurrentFile && !isLastCompleted) return null
+
+                      const isCompleted = downloadProgress.completed.includes(file)
+                      const fileExtension = file.split(".").pop()
+                      const downloadSpeed = downloadProgress.speeds?.[file] || 0
+                      const progress = downloadProgress.progress?.[file] || 0
+                      const statusMessage = downloadProgress.messages?.[file] || ""
+                      const isError = statusMessage.startsWith("Error")
 
                       return (
                         <motion.div
                           key={file}
                           initial={{ opacity: 0, y: 5 }}
                           animate={{ opacity: 1, y: 0 }}
-                          transition={{ delay: index * 0.05 }}
-                          className={`mb-1.5 flex items-center rounded-lg ${isError
-                            ? "bg-red-900/30"
-                            : isCompleted
-                              ? "bg-[#2a1e36]/80"
-                              : "bg-[#2a1e36]/40"
-                            } p-2.5 transition-colors last:mb-0`}>
+                          exit={{ opacity: 0, y: -5 }}
+                          transition={{
+                            enter: { duration: 0.3 },
+                            exit: { duration: 0.2 },
+                          }}
+                          className={`flex items-center rounded-lg ${isError ? "bg-red-900/30" : isCompleted ? "bg-[#2a1e36]/80" : "bg-[#2a1e36]/40"
+                            } p-2.5 transition-colors`}
+                        >
                           <div className="mr-3 flex h-8 w-8 items-center justify-center rounded-md bg-[#3d2a4f]/50 text-gray-300">
                             <FileText className="h-4 w-4" />
                           </div>
@@ -333,12 +346,9 @@ export default function Library() {
                           <div className="flex-1 min-w-0">
                             <p className="truncate text-sm font-medium text-gray-200">{file}</p>
                             <div className="flex flex-col">
-                              <p className="text-xs text-gray-400">
-                                {fileExtension?.toUpperCase()} file
-                              </p>
+                              <p className="text-xs text-gray-400">{fileExtension?.toUpperCase()} file</p>
                               {statusMessage && (
-                                <p className={`text-xs mt-1 ${isError ? "text-red-400" : "text-gray-400"
-                                  }`}>
+                                <p className={`text-xs mt-1 ${isError ? "text-red-400" : "text-gray-400"}`}>
                                   {statusMessage}
                                 </p>
                               )}
@@ -351,13 +361,9 @@ export default function Library() {
                                     />
                                   </div>
                                   <div className="flex justify-between text-xs mt-1">
-                                    <span className="text-purple-300">
-                                      {Math.round(progress)}%
-                                    </span>
+                                    <span className="text-purple-300">{Math.round(progress)}%</span>
                                     {downloadSpeed > 0 && (
-                                      <span className="text-purple-300">
-                                        {downloadSpeed.toFixed(1)} MB/s
-                                      </span>
+                                      <span className="text-purple-300">{downloadSpeed.toFixed(1)} MB/s</span>
                                     )}
                                   </div>
                                 </div>
@@ -381,8 +387,18 @@ export default function Library() {
                             )}
                           </div>
                         </motion.div>
-                      );
+                      )
                     })}
+
+                    {downloadProgress.completed.length === downloadProgress.files.length && (
+                      <motion.div
+                        initial={{ opacity: 0, y: 5 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="mt-3 text-center text-sm text-green-400"
+                      >
+                        All downloads completed!
+                      </motion.div>
+                    )}
                   </AnimatePresence>
                 </div>
               </div>
