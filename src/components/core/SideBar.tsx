@@ -4,6 +4,7 @@ import { HiOutlineHome, HiOutlineCog, HiOutlineFolder, HiOutlineDownload, HiOutl
 import { useRouter } from "next/navigation"
 import Image from "next/image"
 import { useEffect, useState } from "react"
+import { MdOutlineLeaderboard } from "react-icons/md";
 
 export default function Sidebar({ page }: { page: { page: string } }) {
     const router = useRouter()
@@ -44,6 +45,7 @@ export default function Sidebar({ page }: { page: { page: string } }) {
     const navItems = [
         { route: "Home", icon: HiOutlineHome, label: "Home", path: "home" },
         { route: "Library", icon: HiOutlineFolder, label: "Library", path: "library" },
+        { route: "Leaderboard", icon: MdOutlineLeaderboard, label: "Leaderboard", path: "leaderboard" },
         //     { route: "Download", icon: HiOutlineDownload, label: "Download", path: "downloads" },
         //       { route: "Item Shop", icon: HiOutlineShoppingCart, label: "Item Shop", path: "storefront" },
     ]
