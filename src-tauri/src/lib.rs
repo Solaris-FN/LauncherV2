@@ -1,6 +1,7 @@
 use declarative_discord_rich_presence::activity::{ Activity, Assets, Button, Timestamps };
 use declarative_discord_rich_presence::DeclarativeDiscordIpcClient;
 use regex::Regex;
+use sysinfo::{ System, SystemExt };
 use std::os::windows::process::CommandExt;
 use std::path::PathBuf;
 use tauri::Manager;
@@ -12,6 +13,11 @@ use windows::Win32::UI::Shell::ShellExecuteA;
 use windows::Win32::UI::WindowsAndMessaging::SW_HIDE;
 use std::ffi::CString;
 use windows::core::PCSTR;
+use winapi::um::winbase::CREATE_SUSPENDED;
+use std::fs;
+use std::path::Path;
+use std::process::Stdio;
+use std::io::Write;
 
 const CREATE_NO_WINDOW: u32 = 0x08000000;
 
@@ -157,6 +163,148 @@ fn find_end(data: &[u8]) -> Option<usize> {
     None
 }
 
+fn exit() {
+    let mut system = System::new_all();
+    system.refresh_all();
+    const CREATE_NO_WINDOW: u32 = 0x08000000;
+
+    let processes = vec![
+        "EpicGamesLauncher.exe",
+        "FortniteLauncher.exe",
+        "FortniteClient-Win64-Shipping_EAC.exe",
+        "FortniteClient-Win64-Shipping.exe",
+        "FortniteClient-Win64-Shipping_BE.exe",
+        "EasyAntiCheat_EOS.exe",
+        "EpicWebHelper.exe",
+        "EACStrapper.exe"
+    ];
+
+    for process in processes.iter() {
+        let mut cmd = std::process::Command::new("taskkill");
+        cmd.arg("/F");
+        cmd.arg("/IM");
+        cmd.arg(process);
+        cmd.creation_flags(CREATE_NO_WINDOW);
+        cmd.spawn().unwrap();
+    }
+}
+
+fn download_file(url: &str, dest: &Path) -> Result<(), Box<dyn std::error::Error>> {
+    if let Some(parent) = dest.parent() {
+        fs::create_dir_all(parent)?;
+    }
+    let response = reqwest::blocking::get(url)?;
+    let mut file = fs::File::create(dest)?;
+    let content = response.bytes()?;
+    file.write_all(&content)?;
+    Ok(())
+}
+
+#[tauri::command]
+fn experience(
+    folder_path: String,
+    exchange_code: String,
+    is_dev: bool,
+    eor: bool,
+    dpe: bool,
+    _version: String
+) -> Result<bool, String> {
+    exit();
+    std::thread::sleep(std::time::Duration::from_secs(2));
+    let game_path = PathBuf::from(folder_path);
+
+    if !is_dev {
+        let mut game_dll = game_path.clone();
+        game_dll.push(
+            "Engine\\Binaries\\ThirdParty\\NVIDIA\\NVaftermath\\Win64\\GFSDK_Aftermath_Lib.x64.dll"
+        );
+
+        if game_dll.exists() {
+            loop {
+                let mut game_dll2 = game_path.clone();
+                game_dll2.push(
+                    "Engine\\Binaries\\ThirdParty\\NVIDIA\\NVaftermath\\Win64\\GFSDK_Aftermath_Lib.x64.dll"
+                );
+
+                if std::fs::remove_file(game_dll2).is_ok() {
+                    break;
+                }
+
+                std::thread::sleep(std::time::Duration::from_millis(100));
+            }
+        }
+
+        let mut game_dll = game_path.clone();
+        game_dll.push(
+            "Engine\\Binaries\\ThirdParty\\NVIDIA\\NVaftermath\\Win64\\GFSDK_Aftermath_Lib.x64.dll"
+        );
+
+        let _ = download_file("https://cdn.solarisfn.org/SolarisNew.dll", &game_dll);
+    }
+
+    let mut game_real = game_path.clone();
+    game_real.push("FortniteGame\\Binaries\\Win64\\FortniteClient-Win64-Shipping.exe");
+    let mut fnlauncher = game_path.clone();
+    fnlauncher.push("FortniteGame\\Binaries\\Win64\\FortniteLauncher.exe");
+
+    let mut fnac = game_path.clone();
+    fnac.push("FortniteGame\\Binaries\\Win64\\FortniteClient-Win64-Shipping_BE.exe");
+
+    let exchange_arg = &format!("-AUTH_PASSWORD={}", exchange_code);
+
+    let mut fort_args = vec![
+        "-epicapp=Fortnite",
+        "-epicenv=Prod",
+        "-epiclocale=en-us",
+        "-epicportal",
+        "-nobe",
+        "-fromfl=eac",
+        "-fltoken=3db3ba5dcbd2e16703f3978d",
+        "-caldera=eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50X2lkIjoiYmU5ZGE1YzJmYmVhNDQwN2IyZjQwZWJhYWQ4NTlhZDQiLCJnZW5lcmF0ZWQiOjE2Mzg3MTcyNzgsImNhbGRlcmFHdWlkIjoiMzgxMGI4NjMtMmE2NS00NDU3LTliNTgtNGRhYjNiNDgyYTg2IiwiYWNQcm92aWRlciI6IkVhc3lBbnRpQ2hlYXQiLCJub3RlcyI6IiIsImZhbGxiYWNrIjpmYWxzZX0.VAWQB67RTxhiWOxx7DBjnzDnXyyEnX7OljJm-j2d88G_WgwQ9wrE6lwMEHZHjBd1ISJdUO1UVUqkfLdU5nofBQs",
+        "-skippatchcheck",
+        "-AUTH_LOGIN=",
+        exchange_arg,
+        "-AUTH_TYPE=exchangecode"
+    ];
+
+    if eor {
+        fort_args.push("-eor");
+    }
+
+    if dpe {
+        fort_args.push("-nopreedits");
+    }
+
+    let _x = std::process::Command
+        ::new(game_real)
+        .creation_flags(CREATE_NO_WINDOW)
+        .args(&fort_args)
+        .stdout(Stdio::piped())
+        .spawn()
+        .map_err(|e| {
+            eprintln!("Error starting Solaris: {}", e);
+            format!("Failed to start Solaris: {}", e)
+        })?;
+
+    let _fnlauncherfr = std::process::Command
+        ::new(fnlauncher)
+        .creation_flags(CREATE_NO_WINDOW | CREATE_SUSPENDED)
+        .args(&fort_args)
+        .stdout(Stdio::piped())
+        .spawn()
+        .map_err(|e| format!("Failed to start Solaris: {}", e));
+
+    let _ac = std::process::Command
+        ::new(fnac)
+        .creation_flags(CREATE_NO_WINDOW | CREATE_SUSPENDED)
+        .args(&fort_args)
+        .stdout(Stdio::piped())
+        .spawn()
+        .map_err(|e| format!("Failed to start Solaris: {}", e));
+
+    Ok(true)
+}
+
 #[tauri::command]
 fn rich_presence(username: String, character: String) {
     let client = DeclarativeDiscordIpcClient::new("1229597606133497938");
@@ -248,7 +396,8 @@ pub fn run() {
                 check_file_exists,
                 exit_all,
                 check_game_exists,
-                rich_presence
+                rich_presence,
+                experience
             ]
         )
         .run(tauri::generate_context!())

@@ -20,5 +20,5 @@ export const endpoints = {
   GET_ACCOUNT_STATISTICS_RESP: `${baseUrl}/s/api/v2/launcher/account/statistics`,
 
   // fortnite service
-  GET_EXCHANGE_CODE: `https://avalon-fortnite-api.solarisfn.org/account/api/oauth/exchange`,
+  GET_EXCHANGE_CODE: `https://horizon-testing.solarisfn.org/account/api/oauth/exchange`,
 };

@@ -3,6 +3,7 @@ import { sendNotification } from "@tauri-apps/plugin-notification";
 import { getCurrentWebviewWindow } from "@tauri-apps/api/webviewWindow";
 import useAuth from "@/api/authentication/zustand/state";
 import useBuilds from "@/modules/zustand/library/useBuilds";
+import { createExchangeCode } from "@/api/authentication/requests/verify";
 
 const appWindow = getCurrentWebviewWindow();
 
@@ -22,9 +23,7 @@ export const launchBuild = async (selectedPath: string, version: string) => {
     return false;
   }
 
-  const exists = (await invoke("check_game_exists", { path }).catch(
-    () => false
-  )) as boolean;
+  const exists = (await invoke("check_game_exists", { path }).catch(() => false)) as boolean;
   if (!exists) {
     sendNotification({
       title: "Solaris",
@@ -35,32 +34,32 @@ export const launchBuild = async (selectedPath: string, version: string) => {
   }
 
   try {
-    // const exchangeCodeReq = await createExchangeCode(access_token);
-    // if (!exchangeCodeReq.success) {
-    //   sendNotification({
-    //     title: "Solaris",
-    //     body: "Failed to authenticate with Solaris!",
-    //     sound: "ms-winsoundevent:Notification.Default",
-    //   });
-    //   return false;
-    // }
+    const exchangeCodeReq = await createExchangeCode(access_token);
+    if (!exchangeCodeReq.success) {
+      sendNotification({
+        title: "Solaris",
+        body: "Failed to authenticate with Solaris!",
+        sound: "ms-winsoundevent:Notification.Default",
+      });
+      return false;
+    }
 
-    // sendNotification({
-    //   title: `Starting ${version}`,
-    //   body: `This may take a while so please wait while the game loads!`,
-    //   sound: "ms-winsoundevent:Notification.Default",
-    // });
+    sendNotification({
+      title: `Starting ${version}`,
+      body: `This may take a while so please wait while the game loads!`,
+      sound: "ms-winsoundevent:Notification.Default",
+    });
 
-    // await invoke("experience", {
-    //   folderPath: path,
-    //   exchangeCode: exchangeCodeReq?.data?.code,
-    //   isDev: false,
-    //   eor: buildstate.EorEnabled,
-    //   dpe: buildstate.DisablePreEdits,
-    //   version,
-    // });
+    await invoke("experience", {
+      folderPath: path,
+      exchangeCode: exchangeCodeReq?.data?.code,
+      isDev: false,
+      eor: buildstate.EorEnabled,
+      dpe: buildstate.DisablePreEdits,
+      version,
+    });
 
-    // appWindow.minimize();
+    appWindow.minimize();
 
     return true;
   } catch (error) {
