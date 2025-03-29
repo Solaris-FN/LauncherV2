@@ -17,9 +17,15 @@ export default function Library() {
   const [handlers, setHandlers] = useState<any>(null);
   const [isDownloadModalOpen, setIsDownloadModalOpen] = useState(false);
   const [downloadProgress, setDownloadProgress] = useState<{
+    progress: any;
+    messages: any;
+    speeds: any;
     files: string[];
     completed: string[];
   }>({
+    progress: {},
+    messages: {},
+    speeds: {},
     files: [],
     completed: [],
   });
@@ -55,7 +61,7 @@ export default function Library() {
       if (activeBuild === path) {
         setIsDialogOpen(true);
       } else {
-        setDownloadProgress({ files: [], completed: [] });
+        setDownloadProgress({ progress: {}, messages: {}, speeds: {}, files: [], completed: [] });
         setIsDownloadModalOpen(true);
 
         await handlers.handleLaunchBuild(
@@ -108,9 +114,8 @@ export default function Library() {
               return (
                 <div
                   key={index}
-                  className={`bg-[#191b1c]/40 rounded-lg overflow-hidden shadow-lg transition-all duration-300 ${
-                    isActive ? "ring-2 ring-gray-400/40" : "hover:shadow-3xl"
-                  }`}
+                  className={`bg-[#191b1c]/40 rounded-lg overflow-hidden shadow-lg transition-all duration-300 ${isActive ? "ring-2 ring-gray-400/40" : "hover:shadow-3xl"
+                    }`}
                   onMouseEnter={() => setHoveredBuild(build.path)}
                   onMouseLeave={() => setHoveredBuild(null)}>
                   <button
@@ -145,8 +150,8 @@ export default function Library() {
                           {versionNumber <= 10.4
                             ? "Chapter 1"
                             : versionNumber <= 18.4
-                            ? "Chapter 2"
-                            : "Chapter 3"}
+                              ? "Chapter 2"
+                              : "Chapter 3"}
                         </span>
                       </div>
                       <div className="flex justify-between items-center">
@@ -237,8 +242,7 @@ export default function Library() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm"
-            onClick={() => setIsDownloadModalOpen(false)}>
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
             <motion.div
               initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
@@ -259,11 +263,13 @@ export default function Library() {
               <div className="relative z-10">
                 <div className="mb-6 flex items-center justify-between">
                   <h2 className="text-xl font-semibold text-white">Downloading Files</h2>
-                  <button
-                    onClick={() => setIsDownloadModalOpen(false)}
-                    className="rounded-full p-1 text-gray-400 transition-colors hover:bg-[#3d2a4f]/50 hover:text-white">
-                    <X className="h-5 w-5" />
-                  </button>
+                  {downloadProgress.completed.length === downloadProgress.files.length && (
+                    <button
+                      onClick={() => setIsDownloadModalOpen(false)}
+                      className="rounded-full p-1 text-gray-400 transition-colors hover:bg-[#3d2a4f]/50 hover:text-white">
+                      <X className="h-5 w-5" />
+                    </button>
+                  )}
                 </div>
 
                 <div className="mb-5">
@@ -275,7 +281,7 @@ export default function Library() {
                       {Math.round(
                         downloadProgress.files.length > 0
                           ? (downloadProgress.completed.length / downloadProgress.files.length) *
-                              100
+                          100
                           : 0
                       )}
                       % complete
@@ -286,12 +292,11 @@ export default function Library() {
                     <motion.div
                       initial={{ width: 0 }}
                       animate={{
-                        width: `${
-                          downloadProgress.files.length > 0
-                            ? (downloadProgress.completed.length / downloadProgress.files.length) *
-                              100
-                            : 0
-                        }%`,
+                        width: `${downloadProgress.files.length > 0
+                          ? (downloadProgress.completed.length / downloadProgress.files.length) *
+                          100
+                          : 0
+                          }%`,
                       }}
                       transition={{ type: "spring", damping: 20, stiffness: 60 }}
                       className="h-full rounded-full bg-purple-500"
@@ -304,6 +309,10 @@ export default function Library() {
                     {downloadProgress.files.map((file, index) => {
                       const isCompleted = downloadProgress.completed.includes(file);
                       const fileExtension = file.split(".").pop();
+                      const downloadSpeed = downloadProgress.speeds?.[file] || 0;
+                      const progress = downloadProgress.progress?.[file] || 0;
+                      const statusMessage = downloadProgress.messages?.[file] || "";
+                      const isError = statusMessage.startsWith("Error");
 
                       return (
                         <motion.div
@@ -311,22 +320,57 @@ export default function Library() {
                           initial={{ opacity: 0, y: 5 }}
                           animate={{ opacity: 1, y: 0 }}
                           transition={{ delay: index * 0.05 }}
-                          className={`mb-1.5 flex items-center rounded-lg ${
-                            isCompleted ? "bg-[#2a1e36]/80" : "bg-[#2a1e36]/40"
-                          } p-2.5 transition-colors last:mb-0`}>
+                          className={`mb-1.5 flex items-center rounded-lg ${isError
+                            ? "bg-red-900/30"
+                            : isCompleted
+                              ? "bg-[#2a1e36]/80"
+                              : "bg-[#2a1e36]/40"
+                            } p-2.5 transition-colors last:mb-0`}>
                           <div className="mr-3 flex h-8 w-8 items-center justify-center rounded-md bg-[#3d2a4f]/50 text-gray-300">
                             <FileText className="h-4 w-4" />
                           </div>
 
                           <div className="flex-1 min-w-0">
                             <p className="truncate text-sm font-medium text-gray-200">{file}</p>
-                            <p className="text-xs text-gray-400">
-                              {fileExtension?.toUpperCase()} file
-                            </p>
+                            <div className="flex flex-col">
+                              <p className="text-xs text-gray-400">
+                                {fileExtension?.toUpperCase()} file
+                              </p>
+                              {statusMessage && (
+                                <p className={`text-xs mt-1 ${isError ? "text-red-400" : "text-gray-400"
+                                  }`}>
+                                  {statusMessage}
+                                </p>
+                              )}
+                              {!isCompleted && (
+                                <div className="mt-1">
+                                  <div className="h-1 w-full bg-[#1a1424] rounded-full overflow-hidden">
+                                    <div
+                                      className="h-full bg-purple-400/80 rounded-full"
+                                      style={{ width: `${progress}%` }}
+                                    />
+                                  </div>
+                                  <div className="flex justify-between text-xs mt-1">
+                                    <span className="text-purple-300">
+                                      {Math.round(progress)}%
+                                    </span>
+                                    {downloadSpeed > 0 && (
+                                      <span className="text-purple-300">
+                                        {downloadSpeed.toFixed(1)} MB/s
+                                      </span>
+                                    )}
+                                  </div>
+                                </div>
+                              )}
+                            </div>
                           </div>
 
                           <div className="ml-3 flex-shrink-0">
-                            {isCompleted ? (
+                            {isError ? (
+                              <div className="flex h-6 w-6 items-center justify-center rounded-full bg-red-900/50 text-red-400">
+                                <X className="h-3.5 w-3.5" />
+                              </div>
+                            ) : isCompleted ? (
                               <div className="flex h-6 w-6 items-center justify-center rounded-full bg-[#3d2a4f]/50 text-green-400">
                                 <CheckCircle2 className="h-3.5 w-3.5" />
                               </div>
@@ -340,26 +384,6 @@ export default function Library() {
                       );
                     })}
                   </AnimatePresence>
-                </div>
-
-                <div className="mt-5 flex justify-end space-x-3">
-                  <button
-                    onClick={() => setIsDownloadModalOpen(false)}
-                    className="rounded-lg border border-[#3d2a4f]/50 bg-transparent px-4 py-2 text-sm font-medium text-gray-300 transition-colors hover:bg-[#3d2a4f]/30">
-                    Cancel
-                  </button>
-
-                  <button
-                    onClick={() => setIsDownloadModalOpen(false)}
-                    className={`rounded-lg px-4 py-2 text-sm font-medium transition-all ${
-                      downloadProgress.completed.length === downloadProgress.files.length
-                        ? "bg-purple-500 text-white hover:bg-purple-600"
-                        : "bg-[#3d2a4f]/50 text-gray-300 hover:bg-[#3d2a4f]/70"
-                    }`}>
-                    {downloadProgress.completed.length === downloadProgress.files.length
-                      ? "Done"
-                      : "Hide"}
-                  </button>
                 </div>
               </div>
             </motion.div>

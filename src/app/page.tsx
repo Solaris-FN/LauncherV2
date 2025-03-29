@@ -69,7 +69,7 @@ export default function Login() {
         <div className="absolute z-10 w-96 p-8 mt-5 h-auto rounded-xl bg-white/5 backdrop-blur-lg border border-white/20 shadow-lg flex flex-col items-center justify-center">
           <div className="flex justify-center mb-2">
             <img
-              src="./SolarisLogo.png"
+              src="./Solarislogo.png"
               alt="Solaris Logo"
               className="h-20 w-auto object-contain"
             />

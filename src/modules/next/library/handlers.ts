@@ -19,11 +19,17 @@ export const handleLaunchBuild = async (
 
       if (filesToProcess.length > 0) {
         setDownloadProgress({
-          files: filesToProcess.map((f) => f.name),
+          files: filesToProcess.map((f: any) => f.Name),
           completed: [],
         });
 
-        await processFilesWithProgress(path, version, filesToProcess, setDownloadProgress);
+        await processFilesWithProgress(
+          path,
+          version,
+          filesToProcess,
+          setDownloadProgress,
+          setIsDownloadModalOpen
+        );
       } else {
         await processFiles(version);
       }

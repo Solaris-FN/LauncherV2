@@ -6,7 +6,7 @@ use std::os::windows::process::CommandExt;
 use std::path::PathBuf;
 use tauri::Manager;
 use tauri::WindowEvent;
-use std::fs::File;
+use std::fs::{ self, File, OpenOptions };
 use std::io::Read;
 use windows::Win32::Foundation::HWND;
 use windows::Win32::UI::Shell::ShellExecuteA;
@@ -14,12 +14,19 @@ use windows::Win32::UI::WindowsAndMessaging::SW_HIDE;
 use std::ffi::CString;
 use windows::core::PCSTR;
 use winapi::um::winbase::CREATE_SUSPENDED;
-use std::fs;
 use std::path::Path;
 use std::process::Stdio;
 use std::io::Write;
+use tauri::Emitter;
+use reqwest::StatusCode;
+use tauri::AppHandle;
+use std::time::{ Duration, Instant };
+use futures_util::StreamExt;
 
 const CREATE_NO_WINDOW: u32 = 0x08000000;
+const MAX_RETRIES: usize = 300;
+const TIMEOUT_SECONDS: u64 = 300;
+const MIN_PROGRESS_INTERVAL_MS: u64 = 500;
 
 #[tauri::command]
 fn get_fortnite_processid() -> Result<Option<String>, String> {
@@ -340,6 +347,210 @@ async fn check_game_exists(path: &str) -> Result<bool, String> {
     }
 }
 
+#[tauri::command]
+async fn download_game_file(url: &str, dest: &str, app: AppHandle) -> Result<(), String> {
+    let dest_path = Path::new(dest);
+
+    if let Some(parent) = dest_path.parent() {
+        fs::create_dir_all(parent).map_err(|e| format!("Failed to create directories: {}", e))?;
+    }
+
+    let filename = dest_path
+        .file_name()
+        .and_then(|f| f.to_str())
+        .unwrap_or("unknown");
+
+    let mut downloaded: u64 = 0;
+    let mut retry_count: usize = 0;
+    let mut file_size: u64 = 0;
+
+    if dest_path.exists() {
+        match fs::metadata(dest_path) {
+            Ok(metadata) => {
+                downloaded = metadata.len();
+
+                let _ = app.emit(
+                    "download-progress",
+                    serde_json::json!({
+                    "filename": filename,
+                    "downloaded": downloaded,
+                    "total": 0, 
+                    "progress": 0,
+                    "speed": 0.0,
+                    "message": "Resuming download..."
+                })
+                );
+            }
+            Err(_) => {
+                downloaded = 0;
+            }
+        }
+    }
+
+    let mut last_update_time = Instant::now();
+    let mut bytes_since_last_update: u64 = 0;
+    let mut last_progress_percentage: u64 = 0;
+
+    let client = reqwest::Client
+        ::builder()
+        .timeout(Duration::from_secs(TIMEOUT_SECONDS))
+        .connect_timeout(Duration::from_secs(30))
+        .build()
+        .map_err(|e| format!("Failed to create HTTP client: {}", e))?;
+
+    while retry_count < MAX_RETRIES {
+        if retry_count > 0 {
+            let _ = app.emit(
+                "download-progress",
+                serde_json::json!({
+                "filename": filename,
+                "downloaded": downloaded,
+                "total": file_size,
+                "progress": if file_size > 0 { (downloaded * 100) / file_size } else { 0 },
+                "speed": 0.0,
+                "message": format!("Retry attempt {} of {}", retry_count, MAX_RETRIES)
+            })
+            );
+        }
+
+        let mut file = if downloaded > 0 {
+            match OpenOptions::new().write(true).append(true).open(dest_path) {
+                Ok(f) => f,
+                Err(_e) => {
+                    downloaded = 0;
+                    File::create(dest_path).map_err(|e| format!("Failed to create file: {}", e))?
+                }
+            }
+        } else {
+            File::create(dest_path).map_err(|e| format!("Failed to create file: {}", e))?
+        };
+
+        let mut request = client.get(url);
+        if downloaded > 0 {
+            request = request.header("Range", format!("bytes={}-", downloaded));
+        }
+
+        match request.send().await {
+            Ok(response) => {
+                let status = response.status();
+
+                if !(status.is_success() || status == StatusCode::PARTIAL_CONTENT) {
+                    retry_count += 1;
+                    continue;
+                }
+
+                if file_size == 0 {
+                    file_size = if status == StatusCode::PARTIAL_CONTENT {
+                        if let Some(content_range) = response.headers().get("content-range") {
+                            if let Ok(range_str) = content_range.to_str() {
+                                if let Some(size_str) = range_str.split('/').nth(1) {
+                                    size_str.parse::<u64>().unwrap_or(0)
+                                } else {
+                                    0
+                                }
+                            } else {
+                                0
+                            }
+                        } else {
+                            response.content_length().unwrap_or(0) + downloaded
+                        }
+                    } else {
+                        response.content_length().unwrap_or(0)
+                    };
+                }
+
+                let mut stream = response.bytes_stream();
+                let mut chunk_timeout = false;
+
+                while let Some(chunk_result) = stream.next().await {
+                    match chunk_result {
+                        Ok(chunk) => {
+                            chunk_timeout = false;
+
+                            match file.write_all(&chunk) {
+                                Ok(_) => {
+                                    downloaded += chunk.len() as u64;
+                                    bytes_since_last_update += chunk.len() as u64;
+
+                                    let progress = if file_size > 0 {
+                                        (downloaded * 100) / file_size
+                                    } else {
+                                        0
+                                    };
+
+                                    let time_since_update = last_update_time.elapsed();
+                                    if
+                                        progress > last_progress_percentage ||
+                                        time_since_update.as_millis() >
+                                            (MIN_PROGRESS_INTERVAL_MS as u128)
+                                    {
+                                        let speed_mbps = if time_since_update.as_secs_f64() > 0.0 {
+                                            (bytes_since_last_update as f64) /
+                                                (1024.0 * 1024.0) /
+                                                time_since_update.as_secs_f64()
+                                        } else {
+                                            0.0
+                                        };
+
+                                        let _ = app.emit(
+                                            "download-progress",
+                                            serde_json::json!({
+                                            "filename": filename,
+                                            "downloaded": downloaded,
+                                            "total": file_size,
+                                            "progress": progress,
+                                            "speed": speed_mbps
+                                        })
+                                        );
+
+                                        last_progress_percentage = progress;
+                                        last_update_time = Instant::now();
+                                        bytes_since_last_update = 0;
+                                    }
+                                }
+                                Err(e) => {
+                                    return Err(format!("Failed to write to file: {}", e));
+                                }
+                            }
+                        }
+                        Err(e) => {
+                            if e.is_timeout() {
+                                chunk_timeout = true;
+                                break;
+                            }
+                            return Err(format!("Error downloading: {}", e));
+                        }
+                    }
+                }
+
+                if !chunk_timeout {
+                    if file_size == 0 || downloaded >= file_size {
+                        let _ = app.emit(
+                            "download-completed",
+                            serde_json::json!({
+                            "filename": filename,
+                            "size": downloaded
+                        })
+                        );
+                        return Ok(());
+                    }
+                }
+
+                retry_count += 1;
+            }
+            Err(e) => {
+                if e.is_timeout() {
+                    retry_count += 1;
+                    continue;
+                }
+                return Err(format!("Request error: {}", e));
+            }
+        }
+    }
+
+    Err(format!("Failed to download after {} retries", MAX_RETRIES))
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri_plugin_deep_link::prepare("com.solarisfn.org");
@@ -397,7 +608,8 @@ pub fn run() {
                 exit_all,
                 check_game_exists,
                 rich_presence,
-                experience
+                experience,
+                download_game_file
             ]
         )
         .run(tauri::generate_context!())
