@@ -64,7 +64,7 @@ export default function Leaderboard() {
         .sort((a, b) => {
             const A = calculateScore(a.eliminations, a.wins)
             const B = calculateScore(b.eliminations, b.wins)
-            return A - B
+            return B - A  // Changed to sort in descending order
         })
 
     const getRankStyle = (index: number) => {
@@ -83,11 +83,9 @@ export default function Leaderboard() {
 
     return (
         <div className="flex min-h-screen">
-            <div className="fixed h-screen">
-                <Sidebar page={{ page: "Leaderboard" }} />
-            </div>
+            <Sidebar page={{ page: "Leaderboard" }} />
 
-            <div className="flex-1 ml-16">
+            <div className="flex-1">
                 <motion.main
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -236,4 +234,3 @@ export default function Leaderboard() {
         </div>
     )
 }
-
