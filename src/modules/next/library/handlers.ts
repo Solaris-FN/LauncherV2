@@ -1,11 +1,6 @@
 import { invoke } from "@tauri-apps/api/core";
 import { handleAddBuild as addbuild } from "@/modules/next/library/addbuild";
-import {
-  getFilesToProcess,
-  launchBuild,
-  processFiles,
-  processFilesWithProgress,
-} from "./launch";
+import { getFilesToProcess, launchBuild, processFiles, processFilesWithProgress } from "./launch";
 
 export const handleLaunchBuild = async (
   path: string,
@@ -28,12 +23,7 @@ export const handleLaunchBuild = async (
           completed: [],
         });
 
-        await processFilesWithProgress(
-          path,
-          version,
-          filesToProcess,
-          setDownloadProgress
-        );
+        await processFilesWithProgress(path, version, filesToProcess, setDownloadProgress);
       } else {
         await processFiles(version);
       }
@@ -57,10 +47,7 @@ export const handleAddBuild = async (setIsLoading: Function) => {
   }
 };
 
-export const handleCloseBuild = async (
-  setActiveBuild: Function,
-  setIsDialogOpen: Function
-) => {
+export const handleCloseBuild = async (setActiveBuild: Function, setIsDialogOpen: Function) => {
   const exit = await invoke("exit_all");
   if (exit) {
     setActiveBuild(null);
@@ -73,10 +60,7 @@ export const checkifopen = async (setActiveBuild: Function) => {
   if (isOpen) {
     if (typeof isOpen === "string") {
       setActiveBuild(
-        isOpen.replace(
-          "\\FortniteGame\\Binaries\\Win64\\FortniteClient-Win64-Shipping.exe",
-          ""
-        )
+        isOpen.replace("\\FortniteGame\\Binaries\\Win64\\FortniteClient-Win64-Shipping.exe", "")
       );
     }
   }
