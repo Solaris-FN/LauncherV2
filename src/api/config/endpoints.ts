@@ -1,4 +1,4 @@
-const baseUrl = "https://horizon-testing.solarisfn.org";
+const baseUrl = "https://api-v1-horizon-external-api.solarisfn.org/";
 
 export const endpoints = {
   // login
@@ -21,5 +21,5 @@ export const endpoints = {
   GET_ACCOUNT_STATISTICS_RESP: `${baseUrl}/s/api/v2/launcher/account/statistics`,
 
   // fortnite service
-  GET_EXCHANGE_CODE: `https://horizon-testing.solarisfn.org/account/api/oauth/exchange`,
+  GET_EXCHANGE_CODE: `https://api-v1-horizon-fortnite-api.solarisfn.org/account/api/oauth/exchange`,
 };
