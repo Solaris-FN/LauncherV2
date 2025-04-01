@@ -152,44 +152,58 @@ export default function Settings() {
                       <div>
                         <div className="flex items-center space-x-2">
                           <h3 className="text-gray-400 font-semibold">{auth.user?.displayName}</h3>
-                          {typeof auth.user?.role === 'string' && Number(auth.user.role) >= 2 && (
-                            <Dialog>
-                              <DialogTrigger asChild>
-                                <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                                  <Pencil className="h-4 w-4 text-gray-400" />
-                                </Button>
-                              </DialogTrigger>
-                              <DialogContent className="bg-[#141414] text-gray-400 border-b-1 border-[#2c2d32]">
-                                <DialogHeader>
-                                  <DialogTitle className="text-gray-400">Edit Username</DialogTitle>
-                                  <DialogDescription className="text-gray-400">
-                                    Enter your new username below.
-                                  </DialogDescription>
-                                </DialogHeader>
-                                <div className="grid gap-4 py-4">
-                                  <div className="grid grid-cols-4 items-center gap-4">
-                                    <Label htmlFor="name" className="text-right text-gray-400">
-                                      Username
-                                    </Label>
-                                    <Input
-                                      id="name"
-                                      value={newUsername}
-                                      onChange={handleUsernameChange}
-                                      className="col-span-3 bg-[#0a0a0a] text-gray-400 border-[#2c2d32]"
-                                    />
-                                  </div>
-                                </div>
-                                <DialogFooter>
-                                  <Button
-                                    onClick={handleUsernameSubmit}
-                                    className="bg-purple-600 hover:bg-purple-700 text-gray-400"
-                                  >
-                                    Save Changes
+                          {Array.isArray(auth.user?.roles) &&
+                            auth.user.roles.some(role =>
+                              [
+                                "1348073375108436028",
+                                "1327061056941592657",
+                                "1348073609687601273",
+                                "1348073577953624124",
+                                "1348073653564084338",
+                                "1356408914144399421",
+                                "1326903293275934841",
+                                "1326906818366013451",
+                                "1349804908064407704",
+                                "1326902806992523356"
+                              ].includes(role)
+                            ) && (
+                              <Dialog>
+                                <DialogTrigger asChild>
+                                  <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                                    <Pencil className="h-4 w-4 text-gray-400" />
                                   </Button>
-                                </DialogFooter>
-                              </DialogContent>
-                            </Dialog>
-                          )}
+                                </DialogTrigger>
+                                <DialogContent className="bg-[#141414] text-gray-400 border-b-1 border-[#2c2d32]">
+                                  <DialogHeader>
+                                    <DialogTitle className="text-gray-400">Edit Username</DialogTitle>
+                                    <DialogDescription className="text-gray-400">
+                                      Enter your new username below.
+                                    </DialogDescription>
+                                  </DialogHeader>
+                                  <div className="grid gap-4 py-4">
+                                    <div className="grid grid-cols-4 items-center gap-4">
+                                      <Label htmlFor="name" className="text-right text-gray-400">
+                                        Username
+                                      </Label>
+                                      <Input
+                                        id="name"
+                                        value={newUsername}
+                                        onChange={handleUsernameChange}
+                                        className="col-span-3 bg-[#0a0a0a] text-gray-400 border-[#2c2d32]"
+                                      />
+                                    </div>
+                                  </div>
+                                  <DialogFooter>
+                                    <Button
+                                      onClick={handleUsernameSubmit}
+                                      className="bg-purple-600 hover:bg-purple-700 text-gray-400"
+                                    >
+                                      Save Changes
+                                    </Button>
+                                  </DialogFooter>
+                                </DialogContent>
+                              </Dialog>
+                            )}
                         </div>
                         <p className="text-sm text-gray-400">{auth.user?.accountId}</p>
                       </div>

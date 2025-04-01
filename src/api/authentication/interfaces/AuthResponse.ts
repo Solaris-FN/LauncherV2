@@ -6,7 +6,7 @@ export interface AuthResponse {
     email: string;
     profilePicture: string;
     discordId: string;
-    role: string;
+    roles: string[];
   };
   athena: {
     favorite_character: string;

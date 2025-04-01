@@ -14,7 +14,6 @@ interface AuthData {
   hype: AuthResponse["hype"] | null;
   athena: AuthResponse["athena"] | null;
   common_core: AuthResponse["common_core"] | null;
-  rolecolor?: string;
 }
 
 interface AuthActions {
@@ -48,29 +47,11 @@ const storage = {
     }
   },
   set: (key: string, value: unknown): void => {
-    localStorage.setItem(
-      key,
-      typeof value === "string" ? value : JSON.stringify(value)
-    );
+    localStorage.setItem(key, typeof value === "string" ? value : JSON.stringify(value));
   },
   remove: (key: string): void => {
     localStorage.removeItem(key);
   },
-};
-
-const roleColors = {
-  0: "#99aab5", // member
-  1: "#2ecc71", // server booster
-  2: "#1abc9c", // gold
-  3: "#ad1457", // diamond
-  4: "#e74c3c", // platinum
-  5: "#ca9d47", // support
-  6: "#3498db", // staff
-  7: "#136292", // head mod
-  8: "#136292", // manager
-  9: "#29a088", // developer
-  10: "#1a3bd1", // co owner
-  11: "#999bf8", // owner
 };
 
 const getInitState = (): AuthData => {
@@ -81,9 +62,6 @@ const getInitState = (): AuthData => {
     user,
     hype: storage.parse(STORAGE_CONFIG.hype),
     common_core: storage.parse(STORAGE_CONFIG.common_core),
-    rolecolor: user
-      ? roleColors[user.role as unknown as keyof typeof roleColors]
-      : "",
   };
 };
 
