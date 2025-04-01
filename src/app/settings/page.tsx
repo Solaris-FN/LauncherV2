@@ -33,6 +33,7 @@ import { Tauri } from "@/api/config/tauri"
 import useBuilds from "@/modules/zustand/library/useBuilds"
 import useAuth from "@/api/authentication/zustand/state"
 import Sidebar from "@/components/core/SideBar"
+import { generateEditDisplayResponse } from "@/api/authentication/requests/edit_displayname"
 
 interface SwitchProps {
   checked: boolean;
@@ -83,19 +84,13 @@ export default function Settings() {
 
   const handleUsernameSubmit = async () => {
     if (auth.user) {
-      // const newUserCheck = await generateEditDisplayResponse(auth.token, newUsername);
-      // if (newUserCheck.data == true) {
-      //   auth.setUser({
-      //     ...auth.user,
-      //     displayName: newUsername,
-      //     accountId: auth.user.accountId || "",
-      //     banned: auth.user.banned || false,
-      //     email: auth.user.email || "",
-      //     profilePicture: auth.user.profilePicture || "",
-      //     discordId: auth.user.discordId || "",
-      //     role: auth.user.role || ""
-      //   });
-      // }
+      const newUserCheck = await generateEditDisplayResponse(auth.token, newUsername);
+      if (newUserCheck.data == true) {
+        auth.setUser({
+          ...auth.user,
+          displayName: newUsername,
+        });
+      }
     }
   }
 

@@ -17,7 +17,7 @@ export const endpoints = {
   // account
   GET_GENERATE_ACCOUNT_RESP: `${baseUrl}/s/api/v2/launcher/account`,
   GET_ACTIVE_CHECK: `${baseUrl}/s/api/v2/launcher/account/active`,
-  POST_EDIT_DISPLAYNAME: `${baseUrl}/s/api/v2/launcher/edit/displayname`,
+  POST_EDIT_DISPLAYNAME: `${baseUrl}/s/api/v2/launcher/account/edit/display`,
   GET_ACCOUNT_STATISTICS_RESP: `${baseUrl}/s/api/v2/launcher/account/statistics`,
 
   // fortnite service
