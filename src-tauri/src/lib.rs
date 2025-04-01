@@ -521,7 +521,8 @@ async fn download_game_file(url: &str, dest: &str, app: AppHandle) -> Result<(),
                                             "downloaded": downloaded,
                                             "total": file_size,
                                             "progress": progress,
-                                            "speed": speed_mbps
+                                            "speed": speed_mbps,
+                                            "message": "Downloading..."
                                         })
                                         );
 
