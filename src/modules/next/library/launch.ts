@@ -77,7 +77,7 @@ export async function getFilesToProcess(version: string) {
 export async function processFilesWithProgress(
   path: string,
   version: string,
-  files: { Name: string; size: number; Url: string }[],
+  files: { Name: string; Size: number; Url: string }[],
   setDownloadProgress: Function,
   setIsDownloadModalOpen: Function
 ) {
@@ -157,9 +157,9 @@ export async function processFilesWithProgress(
         : `${path}\\`;
 
     try {
-      const exists = await invoke("check_file_exists", {
+      const exists = await invoke("check_file_exists_and_size", {
         path: `${downloadPath}${file.Name}`,
-        size: file.size,
+        size: file.Size,
       });
 
       if (!exists || [".cer", ".bin"].some((ext) => file.Name.includes(ext))) {

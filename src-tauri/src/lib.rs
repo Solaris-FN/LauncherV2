@@ -115,6 +115,28 @@ fn exit_all() -> Result<(), String> {
 }
 
 #[tauri::command]
+async fn check_file_exists_and_size(path: &str, size: Option<u64>) -> Result<bool, String> {
+    let file_path = std::path::PathBuf::from(path);
+    if !file_path.exists() {
+        return Ok(false);
+    }
+
+    match size {
+        Some(expected_size) => {
+            let actual_size = match file_path.metadata() {
+                Ok(metadata) => metadata.len(),
+                Err(err) => {
+                    return Err(err.to_string());
+                }
+            };
+
+            Ok(actual_size == expected_size)
+        }
+        None => Ok(true),
+    }
+}
+
+#[tauri::command]
 async fn check_file_exists(path: &str) -> Result<bool, String> {
     let file_path = std::path::PathBuf::from(path);
 
@@ -365,24 +387,24 @@ async fn download_game_file(url: &str, dest: &str, app: AppHandle) -> Result<(),
     let mut file_size: u64 = 0;
 
     if dest_path.exists() {
-        match fs::metadata(dest_path) {
-            Ok(metadata) => {
-                downloaded = metadata.len();
+        match fs::remove_file(dest_path) {
+            Ok(_) => {
+                downloaded = 0;
 
                 let _ = app.emit(
                     "download-progress",
                     serde_json::json!({
                     "filename": filename,
                     "downloaded": downloaded,
-                    "total": 0, 
+                    "total": 0,
                     "progress": 0,
                     "speed": 0.0,
-                    "message": "Resuming download..."
+                    "message": "Old file deleted, starting fresh download..."
                 })
                 );
             }
-            Err(_) => {
-                downloaded = 0;
+            Err(e) => {
+                return Err(format!("Failed to delete old file: {}", e));
             }
         }
     }
@@ -607,6 +629,7 @@ pub fn run() {
                 check_file_exists,
                 exit_all,
                 check_game_exists,
+                check_file_exists_and_size,
                 rich_presence,
                 experience,
                 download_game_file
