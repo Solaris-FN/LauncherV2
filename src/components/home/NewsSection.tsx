@@ -85,7 +85,7 @@ export default function NewsSection({ className = "", autoRotate = true, interva
         <div
             className={`w-full ${className}`}
         >
-            <div className="relative h-[240px] overflow-hidden rounded-lg shadow-lg">
+            <div className="relative h-[260px] overflow-hidden rounded-lg shadow-lg">
                 <AnimatePresence initial={false} mode="wait">
                     <motion.div
                         key={currentBanner.id}

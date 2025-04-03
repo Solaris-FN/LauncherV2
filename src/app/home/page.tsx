@@ -57,11 +57,8 @@ export default function Home() {
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.25, ease: "easeOut" }}
                 className="flex-1 flex flex-col mt-3">
-                <div className="flex justify-between items-start p-6">
+                <div className="flex justify-between items-start p-6 mt-2">
                     <h1 className="text-3xl font-bold text-white mt-3">Home</h1>
-                    <div className="items-center justify-center space-x-2 shadow-lg backdrop-blur-sm">
-
-                    </div>
 
                     <div className="rounded-xl bg-[#2a1e36]/40 shadow-lg backdrop-blur-sm border border-[#3d2a4f]/50 p-3 w-64">
                         <div className="flex items-center gap-3">
@@ -81,7 +78,7 @@ export default function Home() {
                                                 e.currentTarget.src = `https://cdn.solarisfn.org/Icons/${characterId}.png`;
                                             }
                                         }}
-                                        className="rounded-xs scale-x-[-1]"
+                                        className="rounded-xs scale-x-[1]"
                                         style={{
                                             width: "40px",
                                             height: "40px",
@@ -99,7 +96,7 @@ export default function Home() {
                     </div>
                 </div>
 
-                <div className="px-5 pb-3 w-full rounded-lg mb-6 mt-2">
+                <div className="px-5 pb-5 w-full rounded-lg">
                     <NewsSection />
                 </div>
                 <div className="px-5 pb-3 w-full rounded-lg flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-2">
