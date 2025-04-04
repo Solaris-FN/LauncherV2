@@ -1,13 +1,22 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
   "productName": "Solaris",
-  "version": "0.1.0",
+  "version": "1.1.0",
   "identifier": "com.solarisfn.org",
   "build": {
     "beforeDevCommand": "bun run dev",
     "devUrl": "http://localhost:3000",
     "beforeBuildCommand": "bun run build",
     "frontendDist": "../out"
+  },
+  "plugins": {
+    "updater": {
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEQwNjhCRDYzMTM4RTVDMDUKUldRRlhJNFRZNzFvMERaWHJMeURTNzJSMVo0TlRUZ21VeUorWGJMTndFL0xtTkZNTTFSdTRvOHQK",
+      "endpoints": ["https://api-v1-horizon-fortnite-api.solarisfn.org/s/api/v2/launcher/updater"],
+      "windows": {
+        "installMode": "passive"
+      }
+    }
   },
   "app": {
     "withGlobalTauri": true,
@@ -39,6 +48,7 @@
       "icons/128x128@2x.png",
       "icons/icon.icns",
       "icons/icon.ico"
-    ]
+    ],
+    "createUpdaterArtifacts": true
   }
 }

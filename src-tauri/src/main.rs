@@ -2,5 +2,5 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 fn main() {
-    launcherv2_lib::run()
+    solaris_lib::run()
 }
