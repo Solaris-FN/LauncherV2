@@ -4,7 +4,6 @@ import useAuth from "@/api/authentication/zustand/state"
 import Sidebar from "@/components/core/SideBar"
 import NewsSection from "@/components/home/NewsSection"
 import StatisticsSection from "@/components/home/StatisticsSection"
-import { FaUserFriends } from "react-icons/fa"
 import { motion } from "framer-motion";
 import FriendsSection from "@/components/home/FriendsSection"
 import { useEffect } from "react"
@@ -16,7 +15,7 @@ export default function Home() {
     useEffect(() => {
         const rpc = async () => {
             if (auth.token !== "") {
-                const characterId = auth.athena?.favorite_character.replace("_solaris", "") ?? "";
+                const characterId = auth.athena?.favorite_character ?? "";
                 const primaryImage = `https://fortnite-api.com/images/cosmetics/br/${characterId}/icon.png`;
                 const smallIcon = `https://fortnite-api.com/images/cosmetics/br/${characterId}/smallicon.png`;
                 const fallbackImage = `https://cdn.solarisfn.org/Icons/${characterId}.png`;

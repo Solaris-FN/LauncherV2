@@ -194,26 +194,6 @@ export default function Login() {
             </div>
           </motion.div>
         )}
-
-        {updateStatus === "up-to-date" && (
-          <motion.div
-            key="up-to-date"
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            className="w-full mt-6 rounded-lg bg-white/5 backdrop-blur-sm border border-white/10 p-4 shadow-lg"
-          >
-            <div className="flex items-center gap-3">
-              <div className="bg-green-500/20 p-2 rounded-full">
-                <CheckCircle className="h-5 w-5 text-green-400" />
-              </div>
-              <div>
-                <h3 className="text-sm font-medium text-white">Up to date</h3>
-                <p className="text-xs text-white/60">You're running the latest version</p>
-              </div>
-            </div>
-          </motion.div>
-        )}
       </AnimatePresence>
     )
   }
