@@ -64,10 +64,10 @@ export default function Home() {
                             <div className="relative">
                                 <div className="h-10 w-10 rounded-full overflow-hidden flex items-center justify-center">
                                     <img
-                                        src={`https://fortnite-api.com/images/cosmetics/br/${auth.athena?.favorite_character.replace("_solaris", "")}/icon.png`}
+                                        src={`https://fortnite-api.com/images/cosmetics/br/${auth.athena?.favorite_character}/icon.png`}
                                         onError={(e) => {
                                             const currentSrc = e.currentTarget.src;
-                                            const characterId = auth.athena?.favorite_character.replace("_solaris", "") ?? "";
+                                            const characterId = auth.athena?.favorite_character ?? "";
 
                                             if (currentSrc.includes('/icon.png')) {
                                                 console.log("Primary image failed, trying smallicon");
