@@ -87,7 +87,7 @@ pub struct ManifestFile {
     pub size: i64,
 }
 
-const BASE_URL: &str = "https://manifest.simplyblk.xyz"; // change to ur url
+const BASE_URL: &str = "https://cdn.solarisfn.org";
 
 fn format_time(seconds: f64) -> String {
     if seconds.is_infinite() || seconds.is_nan() || seconds <= 0.0 {
