@@ -1,5 +1,5 @@
-use declarative_discord_rich_presence::activity::{Activity, Assets, Button, Timestamps};
 use declarative_discord_rich_presence::DeclarativeDiscordIpcClient;
+use declarative_discord_rich_presence::activity::{Activity, Assets, Button, Timestamps};
 use futures_util::StreamExt;
 use regex::Regex;
 use reqwest::StatusCode;
@@ -18,10 +18,16 @@ use tauri::Emitter;
 use tauri::Manager;
 use tauri::WindowEvent;
 use winapi::um::winbase::CREATE_SUSPENDED;
-use windows::core::PCSTR;
 use windows::Win32::Foundation::HWND;
 use windows::Win32::UI::Shell::ShellExecuteA;
 use windows::Win32::UI::WindowsAndMessaging::SW_HIDE;
+use windows::core::PCSTR;
+
+mod builds;
+use builds::download_manager::{
+    DownloadManager, cancel_download, cancel_extraction, download_build, get_available_versions,
+    get_default_install_dir, get_manifest_for_version, is_download_active, is_extraction_active,
+};
 
 const CREATE_NO_WINDOW: u32 = 0x08000000;
 const MAX_RETRIES: usize = 300;
@@ -289,7 +295,7 @@ fn experience(
         "-skippatchcheck",
         "-AUTH_LOGIN=",
         exchange_arg,
-        "-AUTH_TYPE=exchangecode"
+        "-AUTH_TYPE=exchangecode",
     ];
 
     if eor {
@@ -620,7 +626,15 @@ pub fn run() {
             check_file_exists_and_size,
             rich_presence,
             experience,
-            download_game_file
+            download_game_file,
+            download_build,
+            is_download_active,
+            is_extraction_active,
+            cancel_download,
+            cancel_extraction,
+            get_default_install_dir,
+            get_available_versions,
+            get_manifest_for_version
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
