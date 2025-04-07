@@ -33,7 +33,7 @@ export const DirectorySelectionModal = ({
     />
 
     <motion.div
-      className="relative bg-[#1A1A2E] border border-[#3F3F60] rounded-lg p-6 w-full max-w-md shadow-xl"
+      className="relative bg-[#2a1e36] border border-[#4c3a5c] rounded-lg p-6 w-full max-w-md shadow-xl"
       initial={{ scale: 0.9, y: 20 }}
       animate={{ scale: 1, y: 0 }}
       exit={{ scale: 0.9, y: 20 }}>
@@ -47,7 +47,7 @@ export const DirectorySelectionModal = ({
           </span>
           ?
         </p>
-        <div className="flex items-center bg-[#252545] rounded-md p-3 border border-[#3F3F60]">
+        <div className="flex items-center bg-[#3a2b4e] rounded-md p-3 border border-[#4c3a5c]">
           <FolderOpen className="text-gray-400 mr-2 flex-shrink-0" size={18} />
           <p className="text-gray-300 text-sm truncate">
             {downloadState.installDir || defaultInstallDir || "Loading..."}
@@ -57,7 +57,7 @@ export const DirectorySelectionModal = ({
 
       <div className="flex flex-col space-y-3">
         <motion.button
-          className="flex items-center justify-center gap-2 bg-[#3F3F60] hover:bg-[#4F4F70] text-white py-2 px-4 rounded-md transition-colors"
+          className="flex items-center justify-center gap-2 bg-[#4c3a5c] hover:bg-[#5e4a70] text-white py-2 px-4 rounded-md transition-colors"
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
           onClick={onSelectDirectory}>
@@ -66,7 +66,7 @@ export const DirectorySelectionModal = ({
         </motion.button>
 
         <motion.button
-          className="flex items-center justify-center gap-2 bg-[#252545] hover:bg-[#2A2A50] text-white py-2 px-4 rounded-md transition-colors"
+          className="flex items-center justify-center gap-2 bg-[#3a2b4e] hover:bg-[#4a3a5f] text-white py-2 px-4 rounded-md transition-colors"
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
           onClick={onUseDefaultDirectory}

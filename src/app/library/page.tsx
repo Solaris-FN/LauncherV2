@@ -105,12 +105,6 @@ export default function Library() {
         className="flex-grow p-8 justify-center min-h-screen">
         <div className="max-w-6xl mx-auto">
           <h1 className="text-3xl font-bold text-white mt-3">Library</h1>
-          <button
-            onClick={() => setIsBrowseBuildsModalOpen(true)}
-            className="flex items-center px-4 py-2 bg-[#2a1e36]/70 text-white rounded-md border border-[#3d2a4f]/50 hover:bg-[#3d2a4f]/70 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-purple-400/50">
-            <Search className="h-4 w-4 mr-2" />
-            Browse Builds
-          </button>
 
           <br></br>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-3 gap-8">
@@ -188,21 +182,28 @@ export default function Library() {
           </div>
         </div>
         <div
-          className="fixed bottom-8 right-8 flex items-center"
+          className="fixed bottom-6 right-6 flex gap-3"
           onMouseEnter={() => setIsAddHovered(true)}
           onMouseLeave={() => setIsAddHovered(false)}>
           <button
-            className="fixed bottom-4 right-4 shadow-lg bg-[#1F2025]/40 text-white border border-white/20 rounded-md px-3 py-2 text-sm font-medium flex items-center justify-center hover:bg-[#2F3035] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-[#1F2025] focus:ring-white/50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             onClick={() => handleAddBuild()}
-            disabled={isLoading}>
+            disabled={isLoading}
+            className="flex items-center px-4 py-2 bg-[#1F2025]/40 text-white border border-white/20 rounded-md shadow-lg text-sm font-medium hover:bg-[#2F3035] transition-colors focus:outline-none focus:ring-2 focus:ring-white/50 focus:ring-offset-2 focus:ring-offset-[#1F2025] disabled:opacity-50 disabled:cursor-not-allowed">
             {isLoading ? (
               <Loader2 className="h-4 w-4 animate-spin" />
             ) : (
               <>
-                <Plus className="h-4 w-4 mr-1.5" />
+                <Plus className="h-4 w-4 mr-2" />
                 Add
               </>
             )}
+          </button>
+
+          <button
+            onClick={() => setIsBrowseBuildsModalOpen(true)}
+            className="flex items-center px-4 py-2 bg-[#2a1e36]/70 text-white border border-[#3d2a4f]/50 rounded-md hover:bg-[#3d2a4f]/70 transition-colors focus:outline-none focus:ring-2 focus:ring-purple-400/50">
+            <Search className="h-4 w-4 mr-2" />
+            Download Now
           </button>
         </div>
       </motion.main>

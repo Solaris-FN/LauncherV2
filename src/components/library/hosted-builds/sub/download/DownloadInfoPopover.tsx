@@ -3,12 +3,7 @@
 import { motion } from "framer-motion";
 import { Clock, Download, FolderOpen, StopCircle, Zap } from "lucide-react";
 import type { DownloadState } from "../../types";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 
 interface DownloadInfoPopoverProps {
@@ -29,7 +24,7 @@ export const DownloadInfoPopover = ({
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: 5 }}
         transition={{ duration: 0.2 }}
-        className="absolute right-0 top-full mt-2 bg-[#1A1A2E] border border-[#3F3F60] rounded-lg p-4 shadow-lg z-20 w-72 text-sm text-zinc-100">
+        className="absolute right-0 top-full mt-2 bg-[#2A1E36] border border-[#3a294a] rounded-lg p-4 shadow-lg z-20 w-72 text-sm text-zinc-100">
         <div className="space-y-4">
           <div className="space-y-2">
             <div className="flex justify-between items-center">
@@ -37,7 +32,7 @@ export const DownloadInfoPopover = ({
               <span className="text-zinc-400 text-xs">{downloadState.progress}%</span>
             </div>
 
-            <div className="h-1.5 w-full bg-[#252545] rounded-full overflow-hidden">
+            <div className="h-1.5 w-full bg-[#2A1E36] rounded-full overflow-hidden">
               <motion.div
                 initial={{ width: 0 }}
                 animate={{ width: `${downloadState.progress}%` }}
@@ -81,7 +76,7 @@ export const DownloadInfoPopover = ({
               </TooltipTrigger>
               <TooltipContent
                 side="bottom"
-                className="max-w-xs bg-[#1A1A2E] border-[#3F3F60] text-zinc-100">
+                className="max-w-xs bg-[#2A1E36] border-[#3a294a] text-zinc-100">
                 <p className="font-mono text-xs">{downloadState.installDir}</p>
               </TooltipContent>
             </Tooltip>
@@ -90,7 +85,7 @@ export const DownloadInfoPopover = ({
           <motion.button
             className={cn(
               "w-full flex items-center justify-center gap-1.5 rounded-md py-2 px-3 text-sm font-medium",
-              "bg-[#252545] text-red-400 hover:bg-[#2F2F5A] transition-colors"
+              "bg-[#2A1E36] text-red-400 hover:bg-[#3a294a] transition-colors"
             )}
             onClick={() => onCancel(buildId)}
             whileHover={{ scale: 1.01 }}

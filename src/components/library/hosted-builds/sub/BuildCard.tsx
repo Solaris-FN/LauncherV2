@@ -34,7 +34,7 @@ export const BuildCard = ({
     onHoverStart={() => onHover(build.id)}
     onHoverEnd={() => onLeaveHover()}>
     <motion.div
-      className="flex items-center bg-[#252545] hover:bg-[#2A2A50] rounded-md p-3 transition-colors group relative overflow-hidden"
+      className="flex items-center bg-[#2A1E36] hover:bg-[#3a294a] rounded-md p-3 transition-colors group relative overflow-hidden"
       whileHover={{
         y: -2,
         boxShadow: "0 4px 12px rgba(0, 0, 0, 0.2)",
@@ -53,7 +53,7 @@ export const BuildCard = ({
         }}
       />
 
-      <div className="h-12 w-12 bg-[#1A1A2E] rounded-md overflow-hidden flex-shrink-0 relative z-10">
+      <div className="h-12 w-12 bg-[#2A1E36] rounded-md overflow-hidden flex-shrink-0 relative z-10">
         <Image
           src={build.imageUrl || "/placeholder.svg"}
           alt={build.title}
@@ -73,7 +73,7 @@ export const BuildCard = ({
           {build.tags.map((tag, index) => (
             <motion.span
               key={index}
-              className="mr-2 text-xs bg-[#1A1A2E] text-gray-300 px-2 py-0.5 rounded-sm"
+              className="mr-2 text-xs bg-[#2A1E36] text-gray-300 px-2 py-0.5 rounded-sm"
               whileHover={{ scale: 1.05 }}>
               {tag}
             </motion.span>

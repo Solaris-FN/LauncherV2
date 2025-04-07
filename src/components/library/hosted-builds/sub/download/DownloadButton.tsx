@@ -9,7 +9,7 @@ interface DownloadButtonProps {
 
 export const DownloadButton = ({ build, onClick }: DownloadButtonProps) => (
   <motion.button
-    className="p-2 text-gray-400 hover:text-white bg-[#1A1A2E] hover:bg-[#3F3F60] rounded-md transition-colors"
+    className="p-2 text-gray-400 hover:text-white bg-[#2A1E36] hover:bg-[#3a294a] rounded-md transition-colors"
     whileHover={{ scale: 1.05 }}
     whileTap={{ scale: 0.95 }}
     onClick={onClick}>

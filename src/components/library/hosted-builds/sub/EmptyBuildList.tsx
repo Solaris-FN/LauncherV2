@@ -8,7 +8,7 @@ export const EmptyBuildList = () => (
     animate={{ opacity: 1, y: 0 }}
     transition={{ delay: 0.2 }}>
     <motion.div
-      className="bg-[#252545] p-4 rounded-full mb-4 relative"
+      className="bg-[#2a1e36] p-4 rounded-full mb-4 relative"
       initial={{ scale: 0.8 }}
       animate={{ scale: 1 }}
       transition={{
@@ -17,7 +17,7 @@ export const EmptyBuildList = () => (
         damping: 20,
         delay: 0.3,
       }}>
-      <div className="absolute inset-0 rounded-full bg-[#3F3F60]/20 blur-md"></div>
+      <div className="absolute inset-0 rounded-full bg-[#381f4a]/20 blur-md"></div>
       <Download className="h-12 w-12 text-gray-400 relative z-10" />
     </motion.div>
     <h3 className="text-white text-lg font-medium mb-2">No downloads</h3>

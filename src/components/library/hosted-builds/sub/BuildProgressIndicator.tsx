@@ -13,13 +13,13 @@ export const BuildProgressIndicator = ({ status, progress }: BuildProgressIndica
       <div className="w-10 h-10 flex items-center justify-center">
         <div className="absolute inset-0">
           <svg className="w-full h-full" viewBox="0 0 36 36">
-            <circle cx="18" cy="18" r="16" fill="none" stroke="#1A1A2E" strokeWidth="2" />
+            <circle cx="18" cy="18" r="16" fill="none" stroke="#120d18" strokeWidth="2" />
             <circle
               cx="18"
               cy="18"
               r="16"
               fill="none"
-              stroke="#3F3F60"
+              stroke="#2a1e36"
               strokeWidth="2"
               strokeDasharray="100"
               strokeDashoffset={100 - progress}
@@ -31,7 +31,6 @@ export const BuildProgressIndicator = ({ status, progress }: BuildProgressIndica
       </div>
     );
   }
-
   if (status === "success") {
     return (
       <motion.div
@@ -42,7 +41,6 @@ export const BuildProgressIndicator = ({ status, progress }: BuildProgressIndica
       </motion.div>
     );
   }
-
   if (status === "error") {
     return (
       <motion.div
@@ -53,6 +51,5 @@ export const BuildProgressIndicator = ({ status, progress }: BuildProgressIndica
       </motion.div>
     );
   }
-
   return null;
 };

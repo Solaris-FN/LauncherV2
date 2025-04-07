@@ -34,7 +34,6 @@ export default function HostedBuilds({ isOpen, onClose }: HostedBuildsProps) {
   const [defaultInstallDir, setDefaultInstallDir] = useState<string>("");
   const [selectedBuild, setSelectedBuild] = useState<HostedBuild | null>(null);
   const [manifestBuilds, setManifestBuilds] = useState<HostedBuild[]>([]);
-  const builds = useBuildStore();
 
   const { downloadState, setDownloadState, resetDownloadState } = useDownloadStore();
 
@@ -233,7 +232,7 @@ export default function HostedBuilds({ isOpen, onClose }: HostedBuildsProps) {
     <AnimatePresence>
       {isOpen && (
         <motion.div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-sm"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
@@ -254,7 +253,7 @@ export default function HostedBuilds({ isOpen, onClose }: HostedBuildsProps) {
           </AnimatePresence>
 
           <motion.div
-            className="relative w-full max-w-4xl h-[80vh] bg-gradient-to-b from-[#1A1A2E] to-[#16162A] rounded-lg overflow-hidden border border-[#252545] shadow-2xl"
+            className="relative w-full max-w-4xl h-[80vh] bg-gradient-to-b from-[#1a1424] to-[#120d18] rounded-lg overflow-hidden border border-[#2a1e36] shadow-2xl"
             initial={{ scale: 0.95, y: 20, opacity: 0 }}
             animate={{ scale: 1, y: 0, opacity: 1 }}
             exit={{ scale: 0.95, y: 20, opacity: 0 }}
@@ -263,12 +262,12 @@ export default function HostedBuilds({ isOpen, onClose }: HostedBuildsProps) {
               damping: 25,
               stiffness: 300,
             }}>
-            <div className="absolute -top-20 -right-20 w-40 h-40 rounded-full bg-[#3F3F60]/20 blur-3xl pointer-events-none"></div>
-            <div className="absolute -bottom-20 -left-20 w-40 h-40 rounded-full bg-[#3F3F60]/20 blur-3xl pointer-events-none"></div>
+            <div className="absolute -top-20 -right-20 w-40 h-40 rounded-full bg-[#2a1e36]/20 blur-3xl pointer-events-none"></div>
+            <div className="absolute -bottom-20 -left-20 w-40 h-40 rounded-full bg-[#2a1e36]/20 blur-3xl pointer-events-none"></div>
 
             <div className="flex flex-col h-full relative z-10">
               <motion.div
-                className="px-4 py-3 border-b border-[#252545] flex flex-col"
+                className="px-4 py-3 border-b border-[#2a1e36] flex flex-col"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.2 }}>
@@ -330,12 +329,12 @@ export default function HostedBuilds({ isOpen, onClose }: HostedBuildsProps) {
               </div>
 
               <motion.div
-                className="p-3 border-t border-[#252545] flex justify-end items-center bg-[#1A1A2E]"
+                className="p-3 border-t border-[#2a1e36] flex justify-end items-center bg-[#1a1424]"
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.3 }}>
                 <div className="flex items-center text-sm text-gray-400">
-                  <span className="bg-[#252545] px-2 py-1 rounded-sm">
+                  <span className="bg-[#2a1e36] px-2 py-1 rounded-sm">
                     Total: {filteredBuilds.length} builds
                   </span>
                 </div>
@@ -344,8 +343,8 @@ export default function HostedBuilds({ isOpen, onClose }: HostedBuildsProps) {
 
             <motion.button
               onClick={onClose}
-              className="absolute top-4 right-4 p-1.5 text-gray-400 hover:text-white bg-[#252545] hover:bg-[#3F3F60] rounded-full transition-colors z-10"
-              whileHover={{ scale: 1.1, backgroundColor: "#3F3F60" }}
+              className="absolute top-4 right-4 p-1.5 text-gray-400 hover:text-white bg-[#2a1e36] hover:bg-[#381f4a] rounded-full transition-colors z-10"
+              whileHover={{ scale: 1.1, backgroundColor: "#381f4a" }}
               whileTap={{ scale: 0.9 }}>
               <X className="h-5 w-5" />
             </motion.button>
