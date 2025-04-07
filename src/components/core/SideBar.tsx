@@ -46,7 +46,7 @@ export default function Sidebar({ page }: { page: { page: string } }) {
         { route: "Home", icon: HiOutlineHome, label: "Home", path: "home" },
         { route: "Library", icon: HiOutlineFolder, label: "Library", path: "library" },
         { route: "Leaderboard", icon: MdOutlineLeaderboard, label: "Leaderboard", path: "leaderboard" },
-        //     { route: "Download", icon: HiOutlineDownload, label: "Download", path: "downloads" },
+        { route: "Download", icon: HiOutlineDownload, label: "Download", path: "downloads" },
         //       { route: "Item Shop", icon: HiOutlineShoppingCart, label: "Item Shop", path: "storefront" },
     ]
 
@@ -89,7 +89,7 @@ export default function Sidebar({ page }: { page: { page: string } }) {
                 </div>
 
                 <nav
-                    className={`flex flex-col gap-1.5 w-full transition-all duration-300 ${isCollapsed ? "mt-[23vh]" : "mt-1"}`}
+                    className={`flex flex-col gap-1.5 w-full transition-all duration-300 ${isCollapsed ? "mt-[21vh]" : "mt-1"}`}
                 >
                     {navItems.map((item) => (
                         <div key={item.route} className={getItemClassName(item.route)}>

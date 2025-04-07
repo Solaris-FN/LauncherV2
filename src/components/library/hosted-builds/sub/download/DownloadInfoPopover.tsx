@@ -8,8 +8,8 @@ import {
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "app/components/ui/tooltip";
-import { cn } from "app/utils";
+} from "@/components/ui/tooltip";
+import { cn } from "@/lib/utils";
 
 interface DownloadInfoPopoverProps {
   downloadState: DownloadState;
