@@ -3,15 +3,15 @@ use futures_util::StreamExt;
 use indicatif::ProgressBar;
 use regex::Regex;
 use reqwest::Client;
-use serde::{Deserialize, Serialize};
-use std::fs::{self, File};
-use std::io::{self, Read, Seek, SeekFrom, Write};
-use std::path::{Path, PathBuf};
+use serde::{ Deserialize, Serialize };
+use std::fs::{ self, File };
+use std::io::{ self, Read, Seek, SeekFrom, Write };
+use std::path::{ Path, PathBuf };
 use std::sync::Arc;
-use std::time::{Duration, Instant};
-use tauri::{AppHandle, Emitter, State, Window, command};
+use std::time::{ Duration, Instant };
+use tauri::{ AppHandle, Emitter, State, Window, command };
 use tokio::fs::File as AsyncFile;
-use tokio::io::{AsyncWriteExt, BufReader, BufWriter};
+use tokio::io::{ AsyncWriteExt, BufReader, BufWriter };
 use tokio::sync::Mutex;
 
 pub struct DownloadManager {
@@ -87,7 +87,7 @@ pub struct ManifestFile {
     pub size: i64,
 }
 
-const BASE_URL: &str = "https://cdn.solarisfn.org";
+const BASE_URL: &str = "https://manifest.simplyblk.xyz";
 
 fn format_time(seconds: f64) -> String {
     if seconds.is_infinite() || seconds.is_nan() || seconds <= 0.0 {
@@ -110,7 +110,7 @@ fn format_time(seconds: f64) -> String {
 #[command]
 pub async fn is_download_active(
     build_id: String,
-    download_manager: State<'_, DownloadManager>,
+    download_manager: State<'_, DownloadManager>
 ) -> Result<bool, String> {
     let active_downloads = download_manager.active_downloads.lock().await;
     Ok(active_downloads.contains(&build_id))
@@ -119,7 +119,7 @@ pub async fn is_download_active(
 #[command]
 pub async fn is_extraction_active(
     build_id: String,
-    download_manager: State<'_, DownloadManager>,
+    download_manager: State<'_, DownloadManager>
 ) -> Result<bool, String> {
     let active_extractions = download_manager.active_extractions.lock().await;
     Ok(active_extractions.contains(&build_id))
@@ -128,7 +128,7 @@ pub async fn is_extraction_active(
 #[command]
 pub async fn cancel_download(
     build_id: String,
-    download_manager: State<'_, DownloadManager>,
+    download_manager: State<'_, DownloadManager>
 ) -> Result<bool, String> {
     let mut active_downloads = download_manager.active_downloads.lock().await;
     if let Some(index) = active_downloads.iter().position(|id| id == &build_id) {
@@ -142,7 +142,7 @@ pub async fn cancel_download(
 #[command]
 pub async fn cancel_extraction(
     build_id: String,
-    download_manager: State<'_, DownloadManager>,
+    download_manager: State<'_, DownloadManager>
 ) -> Result<bool, String> {
     let mut active_extractions = download_manager.active_extractions.lock().await;
     if let Some(index) = active_extractions.iter().position(|id| id == &build_id) {
@@ -156,7 +156,7 @@ pub async fn cancel_extraction(
 #[command]
 pub async fn get_available_versions() -> Result<Vec<String>, String> {
     let client = Client::new();
-    let versions_url = format!("{}/versions.json", BASE_URL);
+    let versions_url = format!("{}/versions.json", "https://cdn.solarisfn.org");
 
     match client.get(&versions_url).send().await {
         Ok(response) => {
@@ -166,10 +166,7 @@ pub async fn get_available_versions() -> Result<Vec<String>, String> {
                     Err(e) => Err(format!("Failed to parse versions: {}", e)),
                 }
             } else {
-                Err(format!(
-                    "Failed to fetch versions: HTTP {}",
-                    response.status()
-                ))
+                Err(format!("Failed to fetch versions: HTTP {}", response.status()))
             }
         }
         Err(e) => Err(format!("Failed to fetch versions: {}", e)),
@@ -186,7 +183,9 @@ pub async fn get_manifest_for_version(version: String) -> Result<ManifestFile, S
         let client = reqwest::Client::new();
         let manifest_url = format!(
             "{}/{}/{}.manifest",
-            BASE_URL, extracted_version, extracted_version
+            BASE_URL,
+            extracted_version,
+            extracted_version
         );
 
         match client.get(&manifest_url).send().await {
@@ -197,10 +196,7 @@ pub async fn get_manifest_for_version(version: String) -> Result<ManifestFile, S
                         Err(e) => Err(format!("Failed to parse manifest: {}", e)),
                     }
                 } else {
-                    Err(format!(
-                        "Failed to fetch manifest: HTTP {}",
-                        response.status()
-                    ))
+                    Err(format!("Failed to fetch manifest: HTTP {}", response.status()))
                 }
             }
             Err(e) => Err(format!("Failed to fetch manifest: {}", e)),
@@ -214,7 +210,7 @@ pub async fn get_manifest_for_version(version: String) -> Result<ManifestFile, S
 pub async fn download_build(
     window: Window,
     request: DownloadRequest,
-    download_manager: State<'_, DownloadManager>,
+    download_manager: State<'_, DownloadManager>
 ) -> Result<DownloadResult, String> {
     let build_id = request.build_id.clone();
 
@@ -242,9 +238,8 @@ pub async fn download_build(
                 build_id.clone(),
                 &version,
                 &request.destination,
-                &download_manager,
-            )
-            .await
+                &download_manager
+            ).await
         } else {
             Err("Version is required for manifest-based download".into())
         }
@@ -254,9 +249,8 @@ pub async fn download_build(
             build_id.clone(),
             &request.url,
             &request.destination,
-            &download_manager,
-        )
-        .await
+            &download_manager
+        ).await
     };
 
     {
@@ -301,7 +295,7 @@ async fn download_manifest(
     build_id: String,
     version: &str,
     install_path: &str,
-    download_manager: &State<'_, DownloadManager>,
+    download_manager: &State<'_, DownloadManager>
 ) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     let manifest = get_manifest_for_version(version.to_string()).await?;
     let total_size = manifest.size;
@@ -336,7 +330,9 @@ async fn download_manifest(
 
             let extracted_version = match re.captures(&version) {
                 Some(caps) => caps.get(1).unwrap().as_str(),
-                None => return Err("Version extraction failed".into()),
+                None => {
+                    return Err("Version extraction failed".into());
+                }
             };
 
             let chunk_url = format!("{}/{}/{}.chunk", BASE_URL, extracted_version, chunk_id);
@@ -344,12 +340,13 @@ async fn download_manifest(
             let response = client.get(&chunk_url).send().await?;
 
             if !response.status().is_success() {
-                return Err(format!(
-                    "Failed to download chunk {}: HTTP {}",
-                    chunk_id,
-                    response.status()
-                )
-                .into());
+                return Err(
+                    format!(
+                        "Failed to download chunk {}: HTTP {}",
+                        chunk_id,
+                        response.status()
+                    ).into()
+                );
             }
 
             let chunk_data = response.bytes().await?;
@@ -361,34 +358,27 @@ async fn download_manifest(
             output_file.write_all(&decompressed_data).await?;
 
             completed_size += decompressed_data.len() as i64;
-            let percentage = (completed_size as f64 / total_size as f64) * 100.0;
+            let percentage = ((completed_size as f64) / (total_size as f64)) * 100.0;
 
             let elapsed = start_time.elapsed().as_secs_f64();
-            let speed = if elapsed > 0.0 {
-                completed_size as f64 / elapsed
-            } else {
-                0.0
-            };
+            let speed = if elapsed > 0.0 { (completed_size as f64) / elapsed } else { 0.0 };
             let remaining_bytes = total_size - completed_size;
             let eta_seconds = if speed > 0.0 {
-                remaining_bytes as f64 / speed
+                (remaining_bytes as f64) / speed
             } else {
                 f64::INFINITY
             };
             let eta = format_time(eta_seconds);
 
             if last_update.elapsed().as_millis() > 100 {
-                let _ = window.emit(
-                    "download:progress",
-                    DownloadProgress {
-                        build_id: build_id.clone(),
-                        percentage,
-                        downloaded_bytes: completed_size as u64,
-                        total_bytes: total_size as u64,
-                        speed,
-                        eta,
-                    },
-                );
+                let _ = window.emit("download:progress", DownloadProgress {
+                    build_id: build_id.clone(),
+                    percentage,
+                    downloaded_bytes: completed_size as u64,
+                    total_bytes: total_size as u64,
+                    speed,
+                    eta,
+                });
 
                 last_update = std::time::Instant::now();
             }
@@ -397,17 +387,14 @@ async fn download_manifest(
         output_file.flush().await?;
     }
 
-    let _ = window.emit(
-        "download:progress",
-        DownloadProgress {
-            build_id: build_id.clone(),
-            percentage: 100.0,
-            downloaded_bytes: total_size as u64,
-            total_bytes: total_size as u64,
-            speed: 0.0,
-            eta: "0s".to_string(),
-        },
-    );
+    let _ = window.emit("download:progress", DownloadProgress {
+        build_id: build_id.clone(),
+        percentage: 100.0,
+        downloaded_bytes: total_size as u64,
+        total_bytes: total_size as u64,
+        speed: 0.0,
+        eta: "0s".to_string(),
+    });
 
     let _ = window.emit("download:completed", build_id);
 
@@ -419,7 +406,7 @@ async fn download_file(
     build_id: String,
     url: &str,
     destination: &str,
-    download_manager: &State<'_, DownloadManager>,
+    download_manager: &State<'_, DownloadManager>
 ) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     let client = Client::builder()
         .pool_max_idle_per_host(20)
@@ -461,17 +448,13 @@ async fn download_file(
 
         if last_update.elapsed().as_millis() > 100 {
             let elapsed = start_time.elapsed().as_secs_f64();
-            let speed = if elapsed > 0.0 {
-                downloaded_bytes as f64 / elapsed
-            } else {
-                0.0
-            };
+            let speed = if elapsed > 0.0 { (downloaded_bytes as f64) / elapsed } else { 0.0 };
 
             let (percentage, eta) = if has_content_length && total_size > 0 {
-                let percentage = (downloaded_bytes as f64 / total_size as f64) * 100.0;
+                let percentage = ((downloaded_bytes as f64) / (total_size as f64)) * 100.0;
                 let remaining_bytes = total_size.saturating_sub(downloaded_bytes);
                 let eta_seconds = if speed > 0.0 {
-                    remaining_bytes as f64 / speed
+                    (remaining_bytes as f64) / speed
                 } else {
                     f64::INFINITY
                 };
@@ -480,17 +463,14 @@ async fn download_file(
                 (0.0, "Unknown".to_string())
             };
 
-            let _ = window.emit(
-                "download:progress",
-                DownloadProgress {
-                    build_id: build_id.clone(),
-                    percentage,
-                    downloaded_bytes,
-                    total_bytes: total_size,
-                    speed,
-                    eta,
-                },
-            );
+            let _ = window.emit("download:progress", DownloadProgress {
+                build_id: build_id.clone(),
+                percentage,
+                downloaded_bytes,
+                total_bytes: total_size,
+                speed,
+                eta,
+            });
 
             last_update = std::time::Instant::now();
         }
@@ -504,10 +484,13 @@ async fn download_file(
     }
 
     if has_content_length && file_size != total_size {
-        return Err(format!(
-            "Downloaded file size ({}) doesn't match expected size ({}). The download may be incomplete.",
-            file_size, total_size
-        ).into());
+        return Err(
+            format!(
+                "Downloaded file size ({}) doesn't match expected size ({}). The download may be incomplete.",
+                file_size,
+                total_size
+            ).into()
+        );
     }
 
     let _ = window.emit("download:completed", build_id);
@@ -517,8 +500,9 @@ async fn download_file(
 
 #[command]
 pub fn get_default_install_dir() -> Result<String, String> {
-    let home_dir =
-        dirs::home_dir().ok_or_else(|| "Could not determine home directory".to_string())?;
+    let home_dir = dirs
+        ::home_dir()
+        .ok_or_else(|| "Could not determine home directory".to_string())?;
     let default_dir = home_dir.join("Solaris").join("Builds");
 
     if !default_dir.exists() {
