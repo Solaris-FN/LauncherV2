@@ -52,7 +52,7 @@ export default function Sidebar({ page }: { page: { page: string } }) {
     { route: "Home", icon: HiOutlineHome, label: "Home", path: "home" },
     { route: "Library", icon: HiOutlineFolder, label: "Library", path: "library" },
     { route: "Leaderboard", icon: MdOutlineLeaderboard, label: "Leaderboard", path: "leaderboard" },
-    //       { route: "Item Shop", icon: HiOutlineShoppingCart, label: "Item Shop", path: "storefront" },
+    { route: "Item Shop", icon: HiOutlineShoppingCart, label: "Item Shop", path: "storefront" },
   ];
 
   const getIconClassName = (route: string) => {
