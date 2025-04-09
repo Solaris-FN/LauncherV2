@@ -129,7 +129,7 @@ export default function Shop() {
 
   return (
     <div className="flex h-screen overflow-hidden">
-      <Sidebar page={{ page: "storefront" }} />
+      <Sidebar page={{ page: "Item Shop" }} />
       <motion.div
         initial={{ opacity: 0, scale: 0.98 }}
         animate={{ opacity: 1, scale: 1 }}
