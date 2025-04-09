@@ -33,7 +33,6 @@ interface ResponseOrError<T> {
 }
 
 const getRarityColor = (rarity: string): string => {
-  // hey i mean it works :sob: :pray:
   switch (rarity.toLowerCase()) {
     case "epic":
       return "bg-purple-600";
@@ -49,7 +48,6 @@ const getRarityColor = (rarity: string): string => {
 };
 
 const getShopResetTime = (): Date => {
-  // this is bad code but wtv will fix it later i got to go night night
   const now = new Date();
   const today = new Date();
   today.setUTCHours(20 + 4, 0, 0, 0);
@@ -141,9 +139,7 @@ export default function Shop() {
           </div>
         ) : !storeData ? (
           <div className="flex items-center justify-center h-full">
-            <div className="text-white text-xl">
-              Failed to load store data!
-            </div>
+            <div className="text-white text-xl">Failed to load store data!</div>
           </div>
         ) : (
           <div className="max-w-full mx-auto">
