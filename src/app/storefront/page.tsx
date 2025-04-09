@@ -182,12 +182,16 @@ export default function Shop() {
                           className={`${getRarityColor(
                             item.rarity
                           )} rounded-lg overflow-hidden relative shadow-lg border border-[#3d2a4f]/30`}>
-                          <div className="aspect-square relative">
+                          <div className="relative h-48 w-full">
                             <Image
-                              src={item.image || "/placeholder.svg"}
+                              src={
+                                item.image && item.image.includes("token:athenabattlepasstier")
+                                  ? "https://image.fnbr.co/misc/5acf2f1f0c426da90460d028/icon.png"
+                                  : item.image || "/placeholder.svg"
+                              }
                               alt={item.name}
                               fill
-                              className="object-cover"
+                              className="object-contain"
                             />
                           </div>
                           <div className="p-1.5 absolute bottom-0 left-0 right-0 bg-[#2a1e36]/80 backdrop-blur-sm">
