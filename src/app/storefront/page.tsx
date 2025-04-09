@@ -48,22 +48,6 @@ const getRarityColor = (rarity: string): string => {
   }
 };
 
-const getRandomPrice = (rarity: string): number => {
-  // hey i mean it works :sob: :pray:
-  switch (rarity.toLowerCase()) {
-    case "legendary":
-      return 2000;
-    case "epic":
-      return 1500;
-    case "rare":
-      return 1200;
-    case "uncommon":
-      return 800;
-    default:
-      return 500;
-  }
-};
-
 const getShopResetTime = (): Date => {
   // this is bad code but wtv will fix it later i got to go night night
   const now = new Date();
@@ -102,7 +86,7 @@ export default function Shop() {
             ...section,
             Entries: section.Entries.map((item: StoreItem) => ({
               ...item,
-              price: getRandomPrice(item.rarity),
+              price: item.price,
             })),
           })),
         };
@@ -150,7 +134,7 @@ export default function Shop() {
         initial={{ opacity: 0, scale: 0.98 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.25, ease: "easeOut" }}
-        className="flex-1 overflow-y-auto bg-[#121212] p-3">
+        className="flex-1 overflow-y-auto p-3 mt-6">
         {loading ? (
           <div className="flex items-center justify-center h-full">
             <div className="text-white text-xl">Loading storefront...</div>
@@ -158,7 +142,7 @@ export default function Shop() {
         ) : !storeData ? (
           <div className="flex items-center justify-center h-full">
             <div className="text-white text-xl">
-              Failed to load store data prob bc tiva's fatass ate the servers
+              Failed to load store data!
             </div>
           </div>
         ) : (
@@ -169,12 +153,12 @@ export default function Shop() {
                 <div className="absolute -top-6 right-2">
                   <div className="flex items-center text-white bg-[#2a1e36]/40 backdrop-blur-sm border border-[#3d2a4f]/50 px-3 py-1.5 rounded-md shadow-lg">
                     <Clock className="h-4 w-4 mr-2" />
-                    <span className="text-sm">Resets in {timeLeft}</span>
+                    <span className="text-sm">{timeLeft}</span>
                   </div>
                 </div>
                 {storeData.Storefront.map((section, sectionIndex) => (
                   <div key={sectionIndex} className="space-y-2">
-                    <h2 className="text-xl font-bold text-white px-2">{section.name}</h2>
+                    <h2 className="text-xl font-bold text-white px-2 mt-5 ">{section.name}</h2>
                     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2.5 px-1">
                       {section.Entries.map((item, itemIndex) => (
                         <div
