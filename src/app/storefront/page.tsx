@@ -68,7 +68,7 @@ const getShopResetTime = (): Date => {
   // this is bad code but wtv will fix it later i got to go night night
   const now = new Date();
   const today = new Date();
-  today.setUTCHours(20 + 5, 0, 0, 0);
+  today.setUTCHours(20 + 4, 0, 0, 0);
 
   if (now >= today) {
     today.setDate(today.getDate() + 1);
