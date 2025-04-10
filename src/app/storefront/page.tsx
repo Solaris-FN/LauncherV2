@@ -68,7 +68,7 @@ export default function Shop() {
   useEffect(() => {
     const fetchStoreData = async () => {
       try {
-        const response = await getStorefront("meow");
+        const response = await getStorefront();
 
         if (!response.success) {
           console.error("Failed to fetch storefront data");

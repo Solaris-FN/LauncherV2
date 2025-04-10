@@ -18,7 +18,7 @@ interface AuthResponse {
   }[];
 }
 
-export const getStorefront = async (code: string): Promise<ResponseOrError<AuthResponse>> => {
+export const getStorefront = async (): Promise<ResponseOrError<AuthResponse>> => {
   const response: AxiosResponse<any> | AxiosError<any> = await axios
     .get(endpoints.GET_LAUNCHER_SHOP, {})
     .catch(() => new AxiosError<any>());
