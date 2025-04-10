@@ -171,8 +171,20 @@ export default function Shop() {
                               src={
                                 item.image && item.image.includes("token:athenabattlepasstier")
                                   ? "https://image.fnbr.co/misc/5acf2f1f0c426da90460d028/icon.png"
-                                  : item.image || "/placeholder.svg"
+                                  : item.image
                               }
+                              onError={(e) => {
+                                const currentSrc = e.currentTarget.src;
+                                const characterId = item.templateId.replace("athenaloadingscreen:", "") ?? "";
+
+                                if (currentSrc.includes('/featured.png')) {
+                                  console.log("Primary image failed, trying smallicon");
+                                  e.currentTarget.src = `https://fortnite-api.com/images/cosmetics/br/${characterId}/smallicon.png`;
+                                }
+                                else if (currentSrc.includes('/smallicon.png')) {
+                                  e.currentTarget.src = `https://cdn.solarisfn.org/Icons/${characterId}.png`;
+                                }
+                              }}
                               alt={item.name}
                               fill
                               className="object-contain"
