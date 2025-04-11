@@ -143,10 +143,10 @@ export default function Shop() {
           </div>
         ) : (
           <div className="max-w-full mx-auto">
-            <div className="h-7"></div>
+            <h1 className="text-3xl font-bold text-white mt-3 ml-2">Shop</h1>
             <div className="grid grid-cols-1 gap-4">
               <div className="relative">
-                <div className="absolute -top-6 right-2">
+                <div className="absolute -top-3 right-2">
                   <div className="flex items-center text-white bg-[#2a1e36]/40 backdrop-blur-sm border border-[#3d2a4f]/50 px-3 py-1.5 rounded-md shadow-lg">
                     <Clock className="h-4 w-4 mr-2" />
                     <span className="text-sm">{timeLeft}</span>
@@ -154,7 +154,7 @@ export default function Shop() {
                 </div>
                 {storeData.Storefront.map((section, sectionIndex) => (
                   <div key={sectionIndex} className="space-y-2">
-                    <h2 className="text-xl font-bold text-white px-2 mt-5 ">{section.name}</h2>
+                    <h2 className="text-xl font-bold text-white px-2 mt-3">{section.name}</h2>
                     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2.5 px-1">
                       {section.Entries.map((item, itemIndex) => (
                         <div

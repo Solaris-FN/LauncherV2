@@ -155,14 +155,14 @@ export default function Servers() {
           </div>
         ) : (
           <div className="max-w-full mx-auto">
+            <h1 className="text-3xl font-bold text-white mt-3 ml-4">Servers</h1>
             <div className="h-7"></div>
             <div className="grid grid-cols-1 gap-4">
               <div className="relative">
                 <div className="absolute -top-6 right-2"></div>
                 <div className="space-y-2">
-                  <h2 className="text-xl font-bold text-white px-2 mt-5">Active Solaris Servers</h2>
                   <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2.5 px-1">
-                    {servers.map((server) => (
+                    {servers?.length > 0 ? servers.map((server) => (
                       <div
                         key={server.sessionId}
                         className="bg-gray-600 rounded-lg overflow-hidden relative shadow-lg border border-[#3d2a4f]/30">
@@ -204,7 +204,7 @@ export default function Servers() {
                           </div>
                         </div>
                       </div>
-                    ))}
+                    )) : <div className="text-white text-center">No servers found!</div>}
                   </div>
                 </div>
               </div>
