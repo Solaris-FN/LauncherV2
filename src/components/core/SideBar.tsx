@@ -6,6 +6,7 @@ import {
   HiOutlineFolder,
   HiOutlineDownload,
   HiOutlineShoppingCart,
+  HiOutlineServer,
 } from "react-icons/hi";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
@@ -53,6 +54,7 @@ export default function Sidebar({ page }: { page: { page: string } }) {
     { route: "Library", icon: HiOutlineFolder, label: "Library", path: "library" },
     { route: "Leaderboard", icon: MdOutlineLeaderboard, label: "Leaderboard", path: "leaderboard" },
     { route: "Item Shop", icon: HiOutlineShoppingCart, label: "Item Shop", path: "storefront" },
+    { route: "Servers", icon: HiOutlineServer, label: "Servers", path: "servers" },
   ];
 
   const getIconClassName = (route: string) => {
