@@ -1,6 +1,7 @@
 const baseUrl = "https://api-v1-horizon-external-api.solarisfn.org";
 
 export const endpoints = {
+  GET_BASE_URL: baseUrl,
   // login
   GET_DISCORD_URI: `${baseUrl}/s/api/oauth/discord`,
 

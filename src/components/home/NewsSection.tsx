@@ -8,6 +8,7 @@ import { open } from "@tauri-apps/plugin-shell"
 import useAuth from "@/api/authentication/zustand/state"
 import type { Banner, NewsResponse } from "@/api/main/interfaces/news"
 import { generateNewsResponse } from "@/api/main/requests/banners"
+import { endpoints } from "@/api/config/endpoints"
 
 interface NewsSectionProps {
     className?: string
@@ -60,7 +61,7 @@ export default function NewsSection({ className = "", autoRotate = true, interva
         if (banner.cta.type === "lootlabs" && banner.cta.url) {
             open(
                 banner.cta.url +
-                `&r=${Buffer.from(`https://avalon-external-api.solarisfn.org/s/api/lootlabs/callback/${auth.user?.discordId}`).toString("base64")}`,
+                `&r=${Buffer.from(`${endpoints.GET_BASE_URL}/s/api/lootlabs/callback/${auth.user?.discordId}`).toString("base64")}`,
             )
             return
         }
