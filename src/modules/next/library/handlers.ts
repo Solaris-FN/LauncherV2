@@ -21,6 +21,19 @@ export const handleLaunchBuild = async (
         const filesToProcess = await getFilesToProcess(version);
 
         if (filesToProcess.length > 0) {
+          if (buildState.BubbleBuilds) {
+            filesToProcess.push({
+              Name: "pakchunkSolarisBubble-WindowsClient.pak",
+              Url: "https://cdn.solarisfn.org/ZeroPaks/pakchunkSolarisBubble-WindowsClient.pak",
+              Size: 5621421
+            })
+            filesToProcess.push({
+              Name: "pakchunkSolarisBubble-WindowsClient.sig",
+              Url: "https://cdn.solarisfn.org/ZeroPaks/pakchunkSolarisBubble-WindowsClient.sig",
+              Size: 217104
+            })
+          }
+
           setDownloadProgress({
             files: filesToProcess.map((f: any) => f.Name),
             completed: [],

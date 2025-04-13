@@ -68,6 +68,7 @@ export default function Settings() {
   const [editOnRelease, setEditOnRelease] = useState(buildState.EorEnabled)
   const [filecheck, setFileCheck] = useState(buildState.FileCheck)
   const [disablePreEdit, setDisablePreEdit] = useState(buildState.DisablePreEdits)
+  const [bubbleBuilds, setBubbleBuilds] = useState(buildState.BubbleBuilds)
   const settingsTabs = [
     { name: "General", icon: User },
     { name: "About", icon: Info },
@@ -100,6 +101,10 @@ export default function Settings() {
     setEditOnRelease(checked)
   }
 
+  const handleBubbleBuildsChange = (checked: boolean) => {
+    buildState.setBubbleBuilds(checked)
+    setBubbleBuilds(checked)
+  }
 
   const handleDisableFileCheckChanged = (checked: boolean) => {
     buildState.setFileCheck(checked)
@@ -272,6 +277,11 @@ export default function Settings() {
                       checked={disablePreEdit}
                       onChange={handleDisablePreEditChange}
                       label="Disable Pre-Edits"
+                    />
+                    <Switch
+                      checked={bubbleBuilds}
+                      onChange={handleBubbleBuildsChange}
+                      label="Bubble Wrap Builds"
                     />
                     {Array.isArray(auth.user?.roles) &&
                       auth.user.roles.some(role =>

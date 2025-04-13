@@ -19,6 +19,7 @@ interface BuildsState {
   EorEnabled: boolean;
   DisablePreEdits: boolean;
   FileCheck: boolean;
+  BubbleBuilds: boolean;
   setDownloadPath: (path: string) => void;
   add: (path: string, build: IBuild) => void;
   remove: (path: string) => void;
@@ -26,6 +27,7 @@ interface BuildsState {
   setEorEnabled: (enabled: boolean) => void;
   setDisablePreEdits: (enabled: boolean) => void;
   setFileCheck: (enabled: boolean) => void;
+  setBubbleBuilds: (enabled: boolean) => void;
 }
 
 const useBuilds = create<BuildsState>((set, get) => ({
@@ -43,6 +45,10 @@ const useBuilds = create<BuildsState>((set, get) => ({
   fetchedOnce: false,
   isLoading: false,
   error: null,
+  BubbleBuilds:
+    typeof window !== "undefined"
+      ? localStorage.getItem("BubbleBuilds") === "true"
+      : false,
   FileCheck: typeof window !== "undefined"
     ? localStorage.getItem("file_check") === "true"
     : false,
@@ -99,6 +105,12 @@ const useBuilds = create<BuildsState>((set, get) => ({
     if (typeof window === "undefined") return;
     localStorage.setItem("file_check", enabled.toString());
     set({ FileCheck: enabled });
+  },
+
+  setBubbleBuilds: (enabled) => {
+    if (typeof window === "undefined") return;
+    localStorage.setItem("BubbleBuilds", enabled.toString());
+    set({ BubbleBuilds: enabled });
   },
 }));
 
