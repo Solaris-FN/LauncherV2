@@ -264,16 +264,6 @@ export default function Settings() {
                       label="Disable Pre-Edits"
                     />
                     <Switch
-                      checked={editOnRelease}
-                      onChange={handleEditOnReleaseChange}
-                      label="Edit On Release"
-                    />
-                    <Switch
-                      checked={disablePreEdit}
-                      onChange={handleDisablePreEditChange}
-                      label="Disable Pre-Edits"
-                    />
-                    <Switch
                       checked={bubbleBuilds}
                       onChange={handleBubbleBuildsChange}
                       label="Bubble Wrap Builds"
