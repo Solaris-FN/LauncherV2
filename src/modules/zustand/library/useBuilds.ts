@@ -18,12 +18,14 @@ interface BuildsState {
   error: string | null;
   EorEnabled: boolean;
   DisablePreEdits: boolean;
+  FileCheck: boolean;
   setDownloadPath: (path: string) => void;
   add: (path: string, build: IBuild) => void;
   remove: (path: string) => void;
   clear: () => void;
   setEorEnabled: (enabled: boolean) => void;
   setDisablePreEdits: (enabled: boolean) => void;
+  setFileCheck: (enabled: boolean) => void;
 }
 
 const useBuilds = create<BuildsState>((set, get) => ({
@@ -34,13 +36,16 @@ const useBuilds = create<BuildsState>((set, get) => ({
   builds:
     typeof window !== "undefined"
       ? new Map(
-          Object.entries(JSON.parse(localStorage.getItem("builds") || "{}"))
-        )
+        Object.entries(JSON.parse(localStorage.getItem("builds") || "{}"))
+      )
       : new Map(),
   availableBuilds: [],
   fetchedOnce: false,
   isLoading: false,
   error: null,
+  FileCheck: typeof window !== "undefined"
+    ? localStorage.getItem("file_check") === "true"
+    : false,
   EorEnabled:
     typeof window !== "undefined"
       ? localStorage.getItem("Eor_enabled") === "true"
@@ -88,6 +93,12 @@ const useBuilds = create<BuildsState>((set, get) => ({
     if (typeof window === "undefined") return;
     localStorage.setItem("DisablePreEdits", enabled.toString());
     set({ DisablePreEdits: enabled });
+  },
+
+  setFileCheck: (enabled) => {
+    if (typeof window === "undefined") return;
+    localStorage.setItem("file_check", enabled.toString());
+    set({ FileCheck: enabled });
   },
 }));
 

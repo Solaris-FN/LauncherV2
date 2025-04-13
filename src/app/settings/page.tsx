@@ -66,6 +66,7 @@ export default function Settings() {
   const [isLoading, setIsLoading] = useState(true)
   const [newUsername, setNewUsername] = useState(auth.user?.displayName || "")
   const [editOnRelease, setEditOnRelease] = useState(buildState.EorEnabled)
+  const [filecheck, setFileCheck] = useState(buildState.FileCheck)
   const [disablePreEdit, setDisablePreEdit] = useState(buildState.DisablePreEdits)
   const settingsTabs = [
     { name: "General", icon: User },
@@ -97,6 +98,12 @@ export default function Settings() {
   const handleEditOnReleaseChange = (checked: boolean) => {
     buildState.setEorEnabled(checked)
     setEditOnRelease(checked)
+  }
+
+
+  const handleDisableFileCheckChanged = (checked: boolean) => {
+    buildState.setFileCheck(checked)
+    setFileCheck(checked)
   }
 
   const handleDisablePreEditChange = (checked: boolean) => {
@@ -249,6 +256,33 @@ export default function Settings() {
                       onChange={handleDisablePreEditChange}
                       label="Disable Pre-Edits"
                     />
+                  </CardContent>
+                </Card>
+                <Card className="bg-[#2a1e36]/40 shadow-lg backdrop-blur-sm border border-[#3d2a4f]/50  text-gray-400">
+                  <CardHeader>
+                    <CardTitle className="text-gray-400 text-xl">Preferences</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-6">
+                    <Switch
+                      checked={editOnRelease}
+                      onChange={handleEditOnReleaseChange}
+                      label="Edit On Release"
+                    />
+                    <Switch
+                      checked={disablePreEdit}
+                      onChange={handleDisablePreEditChange}
+                      label="Disable Pre-Edits"
+                    />
+                    {Array.isArray(auth.user?.roles) &&
+                      auth.user.roles.some(role =>
+                        ["1349804908064407704", "1326906818366013451"].includes(role)
+                      ) && (
+                        <Switch
+                          checked={filecheck}
+                          onChange={handleDisableFileCheckChanged}
+                          label="Disable File Check"
+                        />
+                      )}
                   </CardContent>
                 </Card>
               </div>

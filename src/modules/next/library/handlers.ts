@@ -1,6 +1,7 @@
 import { invoke } from "@tauri-apps/api/core";
 import { handleAddBuild as addbuild } from "@/modules/next/library/addbuild";
 import { getFilesToProcess, launchBuild, processFiles, processFilesWithProgress } from "./launch";
+import useBuilds from "@/modules/zustand/library/useBuilds";
 
 export const handleLaunchBuild = async (
   path: string,
@@ -15,26 +16,29 @@ export const handleLaunchBuild = async (
     setIsDialogOpen(true);
   } else {
     try {
-      const filesToProcess = await getFilesToProcess(version);
+      const buildState = useBuilds.getState();
+      if (!buildState.FileCheck) {
+        const filesToProcess = await getFilesToProcess(version);
 
-      if (filesToProcess.length > 0) {
-        setDownloadProgress({
-          files: filesToProcess.map((f: any) => f.Name),
-          completed: [],
-        });
+        if (filesToProcess.length > 0) {
+          setDownloadProgress({
+            files: filesToProcess.map((f: any) => f.Name),
+            completed: [],
+          });
 
-        await processFilesWithProgress(
-          path,
-          version,
-          filesToProcess,
-          setDownloadProgress,
-          setIsDownloadModalOpen
-        );
-      } else {
-        await processFiles(version);
+          await processFilesWithProgress(
+            path,
+            version,
+            filesToProcess,
+            setDownloadProgress,
+            setIsDownloadModalOpen
+          );
+        } else {
+          await processFiles(version);
+        }
+
+        setIsDownloadModalOpen(false);
       }
-
-      setIsDownloadModalOpen(false);
 
       setActiveBuild(path);
       await launchBuild(path, version);
