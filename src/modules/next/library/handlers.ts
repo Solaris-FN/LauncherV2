@@ -33,14 +33,18 @@ export const handleLaunchBuild = async (
               Size: 217104,
             });
           } else {
-            await invoke("delete_file", {
-              filePath:
-                path + "\\FortniteGame\\Content\\Paks\\pakchunkSolarisBubble-WindowsClient.pak",
-            });
-            await invoke("delete_file", {
-              filePath:
-                path + "\\FortniteGame\\Content\\Paks\\pakchunkSolarisBubble-WindowsClient.sig",
-            });
+            try {
+              await invoke("delete_file", {
+                filePath:
+                  path + "\\FortniteGame\\Content\\Paks\\pakchunkSolarisBubble-WindowsClient.pak",
+              });
+              await invoke("delete_file", {
+                filePath:
+                  path + "\\FortniteGame\\Content\\Paks\\pakchunkSolarisBubble-WindowsClient.sig",
+              });
+            } catch (error) {
+              console.warn("Failed to delete files, continuing:", error);
+            }
           }
 
           setDownloadProgress({
