@@ -34,6 +34,7 @@ import useBuilds from "@/modules/zustand/library/useBuilds";
 import useAuth from "@/api/authentication/zustand/state";
 import Sidebar from "@/components/core/SideBar";
 import { generateEditDisplayResponse } from "@/api/authentication/requests/edit_displayname";
+import { invoke } from "@tauri-apps/api/core";
 
 interface SwitchProps {
   checked: boolean;
@@ -46,14 +47,12 @@ const Switch: React.FC<SwitchProps> = ({ checked, onChange, label }) => {
     <div className="flex items-center justify-between">
       {label && <span className="text-gray-400">{label}</span>}
       <div
-        className={`relative inline-block w-12 h-6 rounded-full cursor-pointer transition-colors duration-200 ease-in-out ${
-          checked ? "bg-purple-600" : "bg-gray-600"
-        }`}
+        className={`relative inline-block w-12 h-6 rounded-full cursor-pointer transition-colors duration-200 ease-in-out ${checked ? "bg-purple-600" : "bg-gray-600"
+          }`}
         onClick={() => onChange(!checked)}>
         <span
-          className={`absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition-transform duration-200 ease-in-out ${
-            checked ? "transform translate-x-6" : ""
-          }`}
+          className={`absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition-transform duration-200 ease-in-out ${checked ? "transform translate-x-6" : ""
+            }`}
         />
       </div>
     </div>
@@ -102,7 +101,7 @@ export default function Settings() {
     setEditOnRelease(checked);
   };
 
-  const handleBubbleBuildsChange = (checked: boolean) => {
+  const handleBubbleBuildsChange = async (checked: boolean) => {
     buildState.setBubbleBuilds(checked);
     setBubbleBuilds(checked);
   };

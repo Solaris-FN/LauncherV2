@@ -25,13 +25,22 @@ export const handleLaunchBuild = async (
             filesToProcess.push({
               Name: "pakchunkSolarisBubble-WindowsClient.pak",
               Url: "https://cdn.solarisfn.org/ZeroPaks/pakchunkSolarisBubble-WindowsClient.pak",
-              Size: 5621421
-            })
+              Size: 5621421,
+            });
             filesToProcess.push({
               Name: "pakchunkSolarisBubble-WindowsClient.sig",
               Url: "https://cdn.solarisfn.org/ZeroPaks/pakchunkSolarisBubble-WindowsClient.sig",
-              Size: 217104
-            })
+              Size: 217104,
+            });
+          } else {
+            await invoke("delete_file", {
+              filePath:
+                path + "\\FortniteGame\\Content\\Paks\\pakchunkSolarisBubble-WindowsClient.pak",
+            });
+            await invoke("delete_file", {
+              filePath:
+                path + "\\FortniteGame\\Content\\Paks\\pakchunkSolarisBubble-WindowsClient.sig",
+            });
           }
 
           setDownloadProgress({
