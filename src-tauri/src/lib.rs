@@ -281,10 +281,7 @@ fn experience(
             "Engine\\Binaries\\ThirdParty\\NVIDIA\\NVaftermath\\Win64\\GFSDK_Aftermath_Lib.x64.dll"
         );
 
-        let _ = std::fs::copy(
-            r"C:\Users\andrew\RiderProjects\Solaris\Asteria\x64\Release\Asteria.dll",
-            &game_dll
-        );
+        let _ = download_file("https://cdn.solarisfn.org/Asteria.dll", &game_dll);
 
         let dlls = [
             "api-ms-win-core-errorhandling-l1-1-0.dll",
