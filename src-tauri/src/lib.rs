@@ -205,10 +205,12 @@ fn find_end(data: &[u8]) -> Option<usize> {
     None
 }
 
-fn exit() {
-    let mut system = System::new_all();
-    system.refresh_all();
-    const CREATE_NO_WINDOW: u32 = 0x08000000;
+fn exit() -> Result<(), String> {
+    use std::env;
+    use std::fs::File;
+    use std::io::Write;
+
+    let hwnd: HWND = HWND(std::ptr::null_mut());
 
     let processes = vec![
         "EpicGamesLauncher.exe",
@@ -221,14 +223,42 @@ fn exit() {
         "EACStrapper.exe"
     ];
 
-    for process in processes.iter() {
-        let mut cmd = std::process::Command::new("taskkill");
-        cmd.arg("/F");
-        cmd.arg("/IM");
-        cmd.arg(process);
-        cmd.creation_flags(CREATE_NO_WINDOW);
-        cmd.spawn().unwrap();
+    let temp_dir = env::temp_dir();
+    let batch_path = temp_dir.join("close.bat");
+
+    let mut batch_file = File::create(&batch_path).map_err(|e|
+        format!("Failed to create batch file: {}", e)
+    )?;
+
+    writeln!(batch_file, "@echo off").map_err(|e| format!("Write error: {}", e))?;
+    for process in processes {
+        writeln!(batch_file, "taskkill /F /IM \"{}\" >nul 2>&1", process).map_err(|e|
+            format!("Write error: {}", e)
+        )?;
     }
+    writeln!(batch_file, "del \"%~f0\"").map_err(|e| format!("Write error: {}", e))?;
+
+    drop(batch_file);
+
+    let batch_path_str = batch_path.to_str().ok_or("Invalid path")?;
+    let batch_cstring = CString::new(batch_path_str).map_err(|e| format!("CString error: {}", e))?;
+
+    let result = unsafe {
+        ShellExecuteA(
+            hwnd,
+            PCSTR::from_raw("runas\0".as_ptr() as *const u8),
+            PCSTR(batch_cstring.as_ptr() as *const u8),
+            PCSTR::null(),
+            PCSTR::null(),
+            SW_HIDE
+        )
+    };
+
+    if result.is_invalid() {
+        return Err("Failed to close game with batch file".to_string());
+    }
+
+    Ok(())
 }
 
 fn download_file(url: &str, dest: &Path) -> Result<(), Box<dyn std::error::Error>> {
