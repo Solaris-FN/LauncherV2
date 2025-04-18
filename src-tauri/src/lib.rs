@@ -20,8 +20,8 @@ use tauri::WindowEvent;
 use winapi::um::winbase::CREATE_SUSPENDED;
 use windows::Win32::Foundation::HWND;
 use windows::Win32::UI::Shell::ShellExecuteA;
-use windows::Win32::UI::WindowsAndMessaging::SW_HIDE;
 use windows::core::PCSTR;
+use windows::Win32::UI::WindowsAndMessaging::{ SW_SHOW, SW_HIDE };
 
 mod builds;
 use builds::download_manager::{
@@ -250,7 +250,7 @@ fn experience(
     eor: bool,
     dpe: bool,
     ror: bool,
-    _version: String
+    version: String
 ) -> Result<bool, String> {
     exit();
     std::thread::sleep(std::time::Duration::from_secs(2));
@@ -282,7 +282,7 @@ fn experience(
             "Engine\\Binaries\\ThirdParty\\NVIDIA\\NVaftermath\\Win64\\GFSDK_Aftermath_Lib.x64.dll"
         );
 
-        // let _ = std::fs::copy(a
+        // let _ = std::fs::copy(
         //     r"C:\Users\andrew\RiderProjects\Solaris\Asteria\x64\Release\Asteria.dll",
         //     &game_dll
         // );
@@ -387,16 +387,42 @@ fn experience(
         fort_args.push("-nopreedits");
     }
 
-    let _x = std::process::Command
-        ::new(game_real)
-        .creation_flags(CREATE_NO_WINDOW)
-        .args(&fort_args)
-        .stdout(Stdio::piped())
-        .spawn()
-        .map_err(|e| {
-            eprintln!("Error starting Solaris: {}", e);
-            format!("Failed to start Solaris: {}", e)
-        })?;
+    if version == "9.10" {
+        let hwnd: HWND = HWND(std::ptr::null_mut());
+        let args_cstring = CString::new(fort_args.join(" ")).map_err(|e|
+            format!("CString error: {}", e)
+        )?;
+
+        let exe_str = game_real.to_str().ok_or("Invalid path")?;
+        let exe_cstring = CString::new(exe_str).map_err(|e| format!("CString error: {}", e))?;
+
+        let result = unsafe {
+            ShellExecuteA(
+                hwnd,
+                PCSTR::from_raw("runas\0".as_ptr() as *const u8),
+                PCSTR(exe_cstring.as_ptr() as *const u8),
+                PCSTR(args_cstring.as_ptr() as *const u8),
+                PCSTR::null(),
+                SW_SHOW
+            )
+        };
+
+        if result.is_invalid() {
+            return Err("Failed to start Solaris".to_string());
+        }
+    } else {
+        println!("Starting Solaris with args: {:?}", fort_args);
+        let _x = std::process::Command
+            ::new(game_real)
+            .creation_flags(CREATE_NO_WINDOW)
+            .args(&fort_args)
+            .stdout(Stdio::piped())
+            .spawn()
+            .map_err(|e| {
+                eprintln!("Error starting Solaris: {}", e);
+                format!("Failed to start Solaris: {}", e)
+            })?;
+    }
 
     let _fnlauncherfr = std::process::Command
         ::new(fnlauncher)
