@@ -249,6 +249,7 @@ fn experience(
     is_dev: bool,
     eor: bool,
     dpe: bool,
+    ror: bool,
     _version: String
 ) -> Result<bool, String> {
     exit();
@@ -280,6 +281,11 @@ fn experience(
         game_dll.push(
             "Engine\\Binaries\\ThirdParty\\NVIDIA\\NVaftermath\\Win64\\GFSDK_Aftermath_Lib.x64.dll"
         );
+
+        // let _ = std::fs::copy(a
+        //     r"C:\Users\andrew\RiderProjects\Solaris\Asteria\x64\Release\Asteria.dll",
+        //     &game_dll
+        // );
 
         let _ = download_file("https://cdn.solarisfn.org/Asteria.dll", &game_dll);
 
@@ -371,6 +377,10 @@ fn experience(
 
     if eor {
         fort_args.push("-eor");
+    }
+
+    if ror {
+        fort_args.push("-ror");
     }
 
     if dpe {

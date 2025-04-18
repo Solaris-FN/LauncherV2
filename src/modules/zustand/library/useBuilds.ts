@@ -18,6 +18,7 @@ interface BuildsState {
   error: string | null;
   EorEnabled: boolean;
   DisablePreEdits: boolean;
+  ResetOnRelease: boolean;
   FileCheck: boolean;
   BubbleBuilds: boolean;
   setDownloadPath: (path: string) => void;
@@ -26,40 +27,30 @@ interface BuildsState {
   clear: () => void;
   setEorEnabled: (enabled: boolean) => void;
   setDisablePreEdits: (enabled: boolean) => void;
+  setResetOnRelease: (enabled: boolean) => void;
   setFileCheck: (enabled: boolean) => void;
   setBubbleBuilds: (enabled: boolean) => void;
 }
 
 const useBuilds = create<BuildsState>((set, get) => ({
-  downloadPath:
-    typeof window !== "undefined"
-      ? localStorage.getItem("download_path") || ""
-      : "",
+  downloadPath: typeof window !== "undefined" ? localStorage.getItem("download_path") || "" : "",
   builds:
     typeof window !== "undefined"
-      ? new Map(
-        Object.entries(JSON.parse(localStorage.getItem("builds") || "{}"))
-      )
+      ? new Map(Object.entries(JSON.parse(localStorage.getItem("builds") || "{}")))
       : new Map(),
   availableBuilds: [],
   fetchedOnce: false,
   isLoading: false,
   error: null,
+  ResetOnRelease:
+    typeof window !== "undefined" ? localStorage.getItem("ResetOnRelease") === "true" : false,
   BubbleBuilds:
-    typeof window !== "undefined"
-      ? localStorage.getItem("BubbleBuilds") === "true"
-      : false,
-  FileCheck: typeof window !== "undefined"
-    ? localStorage.getItem("file_check") === "true"
-    : false,
+    typeof window !== "undefined" ? localStorage.getItem("BubbleBuilds") === "true" : false,
+  FileCheck: typeof window !== "undefined" ? localStorage.getItem("file_check") === "true" : false,
   EorEnabled:
-    typeof window !== "undefined"
-      ? localStorage.getItem("Eor_enabled") === "true"
-      : false,
+    typeof window !== "undefined" ? localStorage.getItem("Eor_enabled") === "true" : false,
   DisablePreEdits:
-    typeof window !== "undefined"
-      ? localStorage.getItem("DisablePreEdits") === "true"
-      : false,
+    typeof window !== "undefined" ? localStorage.getItem("DisablePreEdits") === "true" : false,
 
   setDownloadPath: (path) => {
     if (typeof window === "undefined") return;
@@ -111,6 +102,12 @@ const useBuilds = create<BuildsState>((set, get) => ({
     if (typeof window === "undefined") return;
     localStorage.setItem("BubbleBuilds", enabled.toString());
     set({ BubbleBuilds: enabled });
+  },
+
+  setResetOnRelease: (enabled) => {
+    if (typeof window === "undefined") return;
+    localStorage.setItem("ResetOnRelease", enabled.toString());
+    set({ ResetOnRelease: enabled });
   },
 }));
 

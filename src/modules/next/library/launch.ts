@@ -58,6 +58,7 @@ export const launchBuild = async (selectedPath: string, version: string) => {
       isDev: false,
       eor: buildstate.EorEnabled,
       dpe: buildstate.DisablePreEdits,
+      ror: buildstate.ResetOnRelease,
       version,
     });
 

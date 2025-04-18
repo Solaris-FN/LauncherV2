@@ -66,6 +66,7 @@ export default function Settings() {
   const [isLoading, setIsLoading] = useState(true);
   const [newUsername, setNewUsername] = useState(auth.user?.displayName || "");
   const [editOnRelease, setEditOnRelease] = useState(buildState.EorEnabled);
+  const [resetOnRelease, setResetOnRelease] = useState(buildState.ResetOnRelease);
   const [filecheck, setFileCheck] = useState(buildState.FileCheck);
   const [disablePreEdit, setDisablePreEdit] = useState(buildState.DisablePreEdits);
   const [bubbleBuilds, setBubbleBuilds] = useState(buildState.BubbleBuilds);
@@ -109,6 +110,11 @@ export default function Settings() {
   const handleDisableFileCheckChanged = (checked: boolean) => {
     buildState.setFileCheck(checked);
     setFileCheck(checked);
+  };
+
+  const handleResetOnReleaseChange = (checked: boolean) => {
+    buildState.setResetOnRelease(checked);
+    setResetOnRelease(checked);
   };
 
   const handleDisablePreEditChange = (checked: boolean) => {
@@ -256,6 +262,11 @@ export default function Settings() {
                       checked={editOnRelease}
                       onChange={handleEditOnReleaseChange}
                       label="Edit On Release"
+                    />
+                    <Switch
+                      checked={resetOnRelease}
+                      onChange={handleResetOnReleaseChange}
+                      label="Reset On Release"
                     />
                     <Switch
                       checked={disablePreEdit}
