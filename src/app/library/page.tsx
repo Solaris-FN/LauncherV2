@@ -198,12 +198,12 @@ export default function Library() {
             )}
           </button>
 
-          {/* <button
+          {<button
             onClick={() => setIsBrowseBuildsModalOpen(true)}
             className="flex items-center px-4 py-2 bg-[#2a1e36]/70 text-white border border-[#3d2a4f]/50 rounded-md hover:bg-[#3d2a4f]/70 transition-colors focus:outline-none focus:ring-2 focus:ring-purple-400/50">
             <Search className="h-4 w-4 mr-2" />
             Download
-          </button> */}
+          </button>}
         </div>
       </motion.main>
 
