@@ -1,4 +1,7 @@
-const baseUrl = "https://api-v1-horizon-external-api.solarisfn.org";
+const baseUrl =
+  process.env.NODE_ENV === "development"
+    ? "http://localhost:80"
+    : "https://api-v1-horizon-external-api.solarisfn.org";
 
 export const endpoints = {
   GET_BASE_URL: baseUrl,
@@ -23,4 +26,5 @@ export const endpoints = {
 
   // fortnite service
   GET_EXCHANGE_CODE: `https://api-v1-horizon-fortnite-api.solarisfn.org/account/api/oauth/exchange`,
+
 };
