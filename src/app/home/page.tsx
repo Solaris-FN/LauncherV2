@@ -6,9 +6,10 @@ import NewsSection from "@/components/home/NewsSection";
 import StatisticsSection from "@/components/home/StatisticsSection";
 import { motion } from "framer-motion";
 import FriendsSection from "@/components/home/FriendsSection";
-import { useEffect } from "react"
+import { useEffect, useState } from "react";
 import { invoke } from "@tauri-apps/api/core";
 import { postGenerateAccountResponse } from "@/api/authentication/requests/account";
+import axios from "axios";
 
 export default function Home() {
   const auth = useAuth();
@@ -20,7 +21,12 @@ export default function Home() {
   const checkUserIP = async () => {
     try {
       const ip = (await invoke("get_user_ip")) as string;
-      await postGenerateAccountResponse(auth.token, ip);
+
+      const req = await postGenerateAccountResponse(auth.token, ip);
+      if (!req.success) {
+        auth.logout();
+        throw new Error("Failed to generate account response");
+      }
     } catch (error) {
       console.error("Failed to get IP:", error);
     }
