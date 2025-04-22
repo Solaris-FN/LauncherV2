@@ -1,6 +1,6 @@
 const baseUrl =
   process.env.NODE_ENV === "development"
-    ? "http://localhost:80"
+    ? "https://api-v1-horizon-external-api.solarisfn.org"
     : "https://api-v1-horizon-external-api.solarisfn.org";
 
 export const endpoints = {
