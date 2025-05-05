@@ -43,6 +43,7 @@
     "shell:default",
     "dialog:default",
     "notification:default",
+    "websocket:default",
     "notification:default",
     "dialog:default"
   ]

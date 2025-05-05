@@ -29,7 +29,7 @@ export default function FriendsSection() {
 
                     const joinInfoData = joinInfoDataKey
                         ? friend.status?.[0]?.Properties?.[joinInfoDataKey]
-                        : null;
+                        : friend.status?.[0].Name;
 
                     return {
                         id: friend.username || friend.resource,

@@ -2,6 +2,7 @@ import { create } from "zustand";
 import { AuthResponse } from "@/api/authentication/interfaces/AuthResponse";
 import { generateAccountResponse } from "@/api/authentication/requests/account";
 import { checkState } from "@/api/authentication/requests/verify";
+import { createXMPP } from "@/api/xmpp/socket";
 
 interface Storage {
   key: string;
@@ -78,6 +79,9 @@ const useAuth = create<AuthState>((set, get) => ({
     storage.set(STORAGE_CONFIG.user.key, user);
     storage.set(STORAGE_CONFIG.common_core.key, common_core);
     storage.set(STORAGE_CONFIG.hype.key, response.data.hype);
+
+    const { ws } = await createXMPP(code, user.accountId, user.displayName);
+    localStorage.setItem("auth.ws", ws.toString());
 
     set({
       token: code,
