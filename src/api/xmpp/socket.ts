@@ -1,6 +1,5 @@
-import WebSocket from "@tauri-apps/plugin-websocket";
+import WebSocket, { Message } from "@tauri-apps/plugin-websocket";
 import { endpoints } from "../config/endpoints";
-import { Message } from "@tauri-apps/plugin-websocket";
 
 export const createXMPP = async (token: string, accountId: string, displayName: string) => {
   let jid = "";
