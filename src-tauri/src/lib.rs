@@ -1,18 +1,18 @@
 use declarative_discord_rich_presence::DeclarativeDiscordIpcClient;
-use declarative_discord_rich_presence::activity::{Activity, Assets, Button, Timestamps};
+use declarative_discord_rich_presence::activity::{ Activity, Assets, Button, Timestamps };
 use futures_util::StreamExt;
 use regex::Regex;
 use reqwest::StatusCode;
 use std::ffi::CString;
-use std::fs::{self, File, OpenOptions};
+use std::fs::{ self, File, OpenOptions };
 use std::io::Read;
 use std::io::Write;
 use std::os::windows::process::CommandExt;
 use std::path::Path;
 use std::path::PathBuf;
 use std::process::Stdio;
-use std::time::{Duration, Instant};
-use sysinfo::{System, SystemExt};
+use std::time::{ Duration, Instant };
+use sysinfo::{ System, SystemExt };
 use tauri::AppHandle;
 use tauri::Emitter;
 use tauri::Manager;
@@ -20,13 +20,20 @@ use tauri::WindowEvent;
 use winapi::um::winbase::CREATE_SUSPENDED;
 use windows::Win32::Foundation::HWND;
 use windows::Win32::UI::Shell::ShellExecuteA;
-use windows::Win32::UI::WindowsAndMessaging::{SW_HIDE, SW_SHOW};
+use windows::Win32::UI::WindowsAndMessaging::{ SW_HIDE, SW_SHOW };
 use windows::core::PCSTR;
 
 mod builds;
 use builds::download_manager::{
-    DownloadManager, cancel_download, cancel_extraction, download_build, get_available_versions,
-    get_default_install_dir, get_manifest_for_version, is_download_active, is_extraction_active,
+    DownloadManager,
+    cancel_download,
+    cancel_extraction,
+    download_build,
+    get_available_versions,
+    get_default_install_dir,
+    get_manifest_for_version,
+    is_download_active,
+    is_extraction_active,
 };
 
 const CREATE_NO_WINDOW: u32 = 0x08000000;
@@ -36,15 +43,18 @@ const MIN_PROGRESS_INTERVAL_MS: u64 = 500;
 
 #[tauri::command]
 fn get_fortnite_processid() -> Result<Option<String>, String> {
-    let output = std::process::Command::new("wmic")
+    let output = std::process::Command
+        ::new("wmic")
         .creation_flags(CREATE_NO_WINDOW)
-        .args(&[
-            "process",
-            "where",
-            "name='FortniteClient-Win64-Shipping.exe'",
-            "get",
-            "ExecutablePath",
-        ])
+        .args(
+            &[
+                "process",
+                "where",
+                "name='FortniteClient-Win64-Shipping.exe'",
+                "get",
+                "ExecutablePath",
+            ]
+        )
         .output()
         .map_err(|e| e.to_string())?;
 
@@ -76,27 +86,28 @@ fn exit_all() -> Result<(), String> {
         "FortniteClient-Win64-Shipping_BE.exe",
         "EasyAntiCheat_EOS.exe",
         "EpicWebHelper.exe",
-        "EACStrapper.exe",
+        "EACStrapper.exe"
     ];
 
     let temp_dir = env::temp_dir();
     let batch_path = temp_dir.join("close.bat");
 
-    let mut batch_file =
-        File::create(&batch_path).map_err(|e| format!("Failed to create batch file: {}", e))?;
+    let mut batch_file = File::create(&batch_path).map_err(|e|
+        format!("Failed to create batch file: {}", e)
+    )?;
 
     writeln!(batch_file, "@echo off").map_err(|e| format!("Write error: {}", e))?;
     for process in processes {
-        writeln!(batch_file, "taskkill /F /IM \"{}\" >nul 2>&1", process)
-            .map_err(|e| format!("Write error: {}", e))?;
+        writeln!(batch_file, "taskkill /F /IM \"{}\" >nul 2>&1", process).map_err(|e|
+            format!("Write error: {}", e)
+        )?;
     }
     writeln!(batch_file, "del \"%~f0\"").map_err(|e| format!("Write error: {}", e))?;
 
     drop(batch_file);
 
     let batch_path_str = batch_path.to_str().ok_or("Invalid path")?;
-    let batch_cstring =
-        CString::new(batch_path_str).map_err(|e| format!("CString error: {}", e))?;
+    let batch_cstring = CString::new(batch_path_str).map_err(|e| format!("CString error: {}", e))?;
 
     let result = unsafe {
         ShellExecuteA(
@@ -105,7 +116,7 @@ fn exit_all() -> Result<(), String> {
             PCSTR(batch_cstring.as_ptr() as *const u8),
             PCSTR::null(),
             PCSTR::null(),
-            SW_HIDE,
+            SW_HIDE
         )
     };
 
@@ -156,8 +167,8 @@ fn search_for_version(path: &str) -> Result<Vec<String>, String> {
     file.read_to_end(&mut buffer).map_err(|e| e.to_string())?;
 
     let pattern = [
-        0x2b, 0x00, 0x2b, 0x00, 0x46, 0x00, 0x6f, 0x00, 0x72, 0x00, 0x74, 0x00, 0x6e, 0x00, 0x69,
-        0x00, 0x74, 0x00, 0x65, 0x00, 0x2b, 0x00,
+        0x2b, 0x00, 0x2b, 0x00, 0x46, 0x00, 0x6f, 0x00, 0x72, 0x00, 0x74, 0x00, 0x6e, 0x00, 0x69, 0x00,
+        0x74, 0x00, 0x65, 0x00, 0x2b, 0x00,
     ];
 
     let mut matches = Vec::new();
@@ -171,7 +182,7 @@ fn search_for_version(path: &str) -> Result<Vec<String>, String> {
                 let utf16_slice = unsafe {
                     std::slice::from_raw_parts(
                         buffer[i..i + pattern.len() + end].as_ptr() as *const u16,
-                        (pattern.len() + end) / 2,
+                        (pattern.len() + end) / 2
                     )
                 };
                 let s = String::from_utf16_lossy(utf16_slice);
@@ -209,27 +220,28 @@ fn exit() -> Result<(), String> {
         "FortniteClient-Win64-Shipping_BE.exe",
         "EasyAntiCheat_EOS.exe",
         "EpicWebHelper.exe",
-        "EACStrapper.exe",
+        "EACStrapper.exe"
     ];
 
     let temp_dir = env::temp_dir();
     let batch_path = temp_dir.join("close.bat");
 
-    let mut batch_file =
-        File::create(&batch_path).map_err(|e| format!("Failed to create batch file: {}", e))?;
+    let mut batch_file = File::create(&batch_path).map_err(|e|
+        format!("Failed to create batch file: {}", e)
+    )?;
 
     writeln!(batch_file, "@echo off").map_err(|e| format!("Write error: {}", e))?;
     for process in processes {
-        writeln!(batch_file, "taskkill /F /IM \"{}\" >nul 2>&1", process)
-            .map_err(|e| format!("Write error: {}", e))?;
+        writeln!(batch_file, "taskkill /F /IM \"{}\" >nul 2>&1", process).map_err(|e|
+            format!("Write error: {}", e)
+        )?;
     }
     writeln!(batch_file, "del \"%~f0\"").map_err(|e| format!("Write error: {}", e))?;
 
     drop(batch_file);
 
     let batch_path_str = batch_path.to_str().ok_or("Invalid path")?;
-    let batch_cstring =
-        CString::new(batch_path_str).map_err(|e| format!("CString error: {}", e))?;
+    let batch_cstring = CString::new(batch_path_str).map_err(|e| format!("CString error: {}", e))?;
 
     let result = unsafe {
         ShellExecuteA(
@@ -238,7 +250,7 @@ fn exit() -> Result<(), String> {
             PCSTR(batch_cstring.as_ptr() as *const u8),
             PCSTR::null(),
             PCSTR::null(),
-            SW_HIDE,
+            SW_HIDE
         )
     };
 
@@ -263,10 +275,11 @@ fn download_file(url: &str, dest: &Path) -> Result<(), Box<dyn std::error::Error
 #[tauri::command]
 fn get_user_ip() -> Result<String, String> {
     match reqwest::blocking::get("https://api4.ipify.org") {
-        Ok(response) => match response.text() {
-            Ok(ip) => Ok(ip),
-            Err(e) => Err(format!("Failed to parse response: {}", e)),
-        },
+        Ok(response) =>
+            match response.text() {
+                Ok(ip) => Ok(ip),
+                Err(e) => Err(format!("Failed to parse response: {}", e)),
+            }
         Err(e) => Err(format!("Failed to make request: {}", e)),
     }
 }
@@ -279,16 +292,15 @@ fn experience(
     eor: bool,
     dpe: bool,
     ror: bool,
-    version: String,
+    version: String
 ) -> Result<bool, String> {
-    exit();
     std::thread::sleep(std::time::Duration::from_secs(2));
     let game_path = PathBuf::from(folder_path);
 
     if !is_dev {
         let mut game_dll = game_path.clone();
         game_dll.push(
-            "Engine\\Binaries\\ThirdParty\\NVIDIA\\NVaftermath\\Win64\\GFSDK_Aftermath_Lib.x64.dll",
+            "Engine\\Binaries\\ThirdParty\\NVIDIA\\NVaftermath\\Win64\\GFSDK_Aftermath_Lib.x64.dll"
         );
 
         if game_dll.exists() {
@@ -308,15 +320,19 @@ fn experience(
 
         let mut game_dll = game_path.clone();
         game_dll.push(
-            "Engine\\Binaries\\ThirdParty\\NVIDIA\\NVaftermath\\Win64\\GFSDK_Aftermath_Lib.x64.dll",
+            "Engine\\Binaries\\ThirdParty\\NVIDIA\\NVaftermath\\Win64\\GFSDK_Aftermath_Lib.x64.dll"
         );
 
-        //        let _ = std::fs::copy(
-        //     r"C:\Users\andrew\RiderProjects\Solaris\Asteria\x64\Release\Asteria.dll",
+        // let _ = std::fs::copy(
+        //     r"C:\Users\andrew\source\repos\Paradise\x64\Release\Paradise.dll",
         //     &game_dll
         // );
 
-        let _ = download_file("https://cdn.solarisfn.org/Asteria.dll", &game_dll);
+        if version.contains("14") {
+            let _ = download_file("https://cdn.solarisfn.org/ParadiseS14.dll", &game_dll);
+        } else {
+            let _ = download_file("https://cdn.solarisfn.org/Asteria.dll", &game_dll);
+        }
 
         let dlls = [
             "api-ms-win-core-errorhandling-l1-1-0.dll",
@@ -395,13 +411,15 @@ fn experience(
         "-epiclocale=en-us",
         "-epicportal",
         "-nobe",
+        "-nouac",
+        "-nocodeguards",
         "-fromfl=eac",
         "-fltoken=3db3ba5dcbd2e16703f3978d",
         "-caldera=eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50X2lkIjoiYmU5ZGE1YzJmYmVhNDQwN2IyZjQwZWJhYWQ4NTlhZDQiLCJnZW5lcmF0ZWQiOjE2Mzg3MTcyNzgsImNhbGRlcmFHdWlkIjoiMzgxMGI4NjMtMmE2NS00NDU3LTliNTgtNGRhYjNiNDgyYTg2IiwiYWNQcm92aWRlciI6IkVhc3lBbnRpQ2hlYXQiLCJub3RlcyI6IiIsImZhbGxiYWNrIjpmYWxzZX0.VAWQB67RTxhiWOxx7DBjnzDnXyyEnX7OljJm-j2d88G_WgwQ9wrE6lwMEHZHjBd1ISJdUO1UVUqkfLdU5nofBQs",
         "-skippatchcheck",
         "-AUTH_LOGIN=",
         exchange_arg,
-        "-AUTH_TYPE=exchangecode",
+        "-AUTH_TYPE=exchangecode"
     ];
 
     if eor {
@@ -416,49 +434,41 @@ fn experience(
         fort_args.push("-nopreedits");
     }
 
-    if version == "9.10" {
-        let hwnd: HWND = HWND(std::ptr::null_mut());
-        let args_cstring =
-            CString::new(fort_args.join(" ")).map_err(|e| format!("CString error: {}", e))?;
+    let hwnd: HWND = HWND(std::ptr::null_mut());
+    let args_cstring = CString::new(fort_args.join(" ")).map_err(|e|
+        format!("CString error: {}", e)
+    )?;
 
-        let exe_str = game_real.to_str().ok_or("Invalid path")?;
-        let exe_cstring = CString::new(exe_str).map_err(|e| format!("CString error: {}", e))?;
+    let exe_str = game_real.to_str().ok_or("Invalid path")?;
+    let exe_cstring = CString::new(exe_str).map_err(|e| format!("CString error: {}", e))?;
 
-        let result = unsafe {
-            ShellExecuteA(
-                hwnd,
-                PCSTR::from_raw("runas\0".as_ptr() as *const u8),
-                PCSTR(exe_cstring.as_ptr() as *const u8),
-                PCSTR(args_cstring.as_ptr() as *const u8),
-                PCSTR::null(),
-                SW_SHOW,
-            )
-        };
+    let result = unsafe {
+        ShellExecuteA(
+            hwnd,
+            PCSTR::from_raw("runas\0".as_ptr() as *const u8),
+            PCSTR(exe_cstring.as_ptr() as *const u8),
+            PCSTR(args_cstring.as_ptr() as *const u8),
+            PCSTR::null(),
+            SW_SHOW
+        )
+    };
 
-        if result.is_invalid() {
-            return Err("Failed to start Solaris".to_string());
-        }
-    } else {
-        println!("Starting Solaris with args: {:?}", fort_args);
-        let _x = std::process::Command::new(game_real)
-            .creation_flags(CREATE_NO_WINDOW)
-            .args(&fort_args)
-            .stdout(Stdio::piped())
-            .spawn()
-            .map_err(|e| {
-                eprintln!("Error starting Solaris: {}", e);
-                format!("Failed to start Solaris: {}", e)
-            })?;
+    if result.is_invalid() {
+        return Err("Failed to start Solaris".to_string());
     }
 
-    let _fnlauncherfr = std::process::Command::new(fnlauncher)
+    std::thread::sleep(std::time::Duration::from_secs(5));
+
+    let _fnlauncherfr = std::process::Command
+        ::new(fnlauncher)
         .creation_flags(CREATE_NO_WINDOW | CREATE_SUSPENDED)
         .args(&fort_args)
         .stdout(Stdio::piped())
         .spawn()
         .map_err(|e| format!("Failed to start Solaris: {}", e));
 
-    let _ac = std::process::Command::new(fnac)
+    let _ac = std::process::Command
+        ::new(fnac)
         .creation_flags(CREATE_NO_WINDOW | CREATE_SUSPENDED)
         .args(&fort_args)
         .stdout(Stdio::piped())
@@ -474,10 +484,9 @@ fn rich_presence(username: String, character: String) {
 
     client.enable();
 
-    let buttons = vec![Button::new(
-        String::from("Play Solaris!"),
-        String::from("https://discord.gg/solarisfn"),
-    )];
+    let buttons = vec![
+        Button::new(String::from("Play Solaris!"), String::from("https://discord.gg/solarisfn"))
+    ];
 
     let timestamp = Timestamps::new();
 
@@ -487,7 +496,7 @@ fn rich_presence(username: String, character: String) {
             .timestamps(timestamp)
             .details(&format!("Logged in as {}", username))
             .assets(Assets::new().large_image("embedded_cover"))
-            .assets(Assets::new().small_image(&character)),
+            .assets(Assets::new().small_image(&character))
     );
 }
 
@@ -535,7 +544,7 @@ async fn download_game_file(url: &str, dest: &str, app: AppHandle) -> Result<(),
                         "progress": 0,
                         "speed": 0.0,
                         "message": "Old file deleted, starting fresh download..."
-                    }),
+                    })
                 );
             }
             Err(e) => {
@@ -548,7 +557,8 @@ async fn download_game_file(url: &str, dest: &str, app: AppHandle) -> Result<(),
     let mut bytes_since_last_update: u64 = 0;
     let mut last_progress_percentage: u64 = 0;
 
-    let client = reqwest::Client::builder()
+    let client = reqwest::Client
+        ::builder()
         .timeout(Duration::from_secs(TIMEOUT_SECONDS))
         .connect_timeout(Duration::from_secs(30))
         .build()
@@ -565,7 +575,7 @@ async fn download_game_file(url: &str, dest: &str, app: AppHandle) -> Result<(),
                     "progress": if file_size > 0 { (downloaded * 100) / file_size } else { 0 },
                     "speed": 0.0,
                     "message": format!("Retry attempt {} of {}", retry_count, MAX_RETRIES)
-                }),
+                })
             );
         }
 
@@ -635,14 +645,15 @@ async fn download_game_file(url: &str, dest: &str, app: AppHandle) -> Result<(),
                                     };
 
                                     let time_since_update = last_update_time.elapsed();
-                                    if progress > last_progress_percentage
-                                        || time_since_update.as_millis()
-                                            > (MIN_PROGRESS_INTERVAL_MS as u128)
+                                    if
+                                        progress > last_progress_percentage ||
+                                        time_since_update.as_millis() >
+                                            (MIN_PROGRESS_INTERVAL_MS as u128)
                                     {
                                         let speed_mbps = if time_since_update.as_secs_f64() > 0.0 {
-                                            (bytes_since_last_update as f64)
-                                                / (1024.0 * 1024.0)
-                                                / time_since_update.as_secs_f64()
+                                            (bytes_since_last_update as f64) /
+                                                (1024.0 * 1024.0) /
+                                                time_since_update.as_secs_f64()
                                         } else {
                                             0.0
                                         };
@@ -656,7 +667,7 @@ async fn download_game_file(url: &str, dest: &str, app: AppHandle) -> Result<(),
                                                 "progress": progress,
                                                 "speed": speed_mbps,
                                                 "message": "Downloading..."
-                                            }),
+                                            })
                                         );
 
                                         last_progress_percentage = progress;
@@ -686,7 +697,7 @@ async fn download_game_file(url: &str, dest: &str, app: AppHandle) -> Result<(),
                             serde_json::json!({
                                 "filename": filename,
                                 "size": downloaded
-                            }),
+                            })
                         );
                         return Ok(());
                     }
@@ -729,7 +740,8 @@ fn delete_file(file_path: String) -> Result<(), String> {
 pub fn run() {
     tauri_plugin_deep_link::prepare("com.solarisfn.org");
 
-    tauri::Builder::default()
+    tauri::Builder
+        ::default()
         .plugin(tauri_plugin_websocket::init())
         .plugin(tauri_plugin_updater::Builder::new().build())
         .plugin(tauri_plugin_opener::init())
@@ -740,59 +752,65 @@ pub fn run() {
         .manage(DownloadManager::new())
         .setup(|app| {
             if cfg!(debug_assertions) {
-                app.handle().plugin(
-                    tauri_plugin_log::Builder::default()
-                        .level(log::LevelFilter::Info)
-                        .build(),
-                )?;
+                app
+                    .handle()
+                    .plugin(
+                        tauri_plugin_log::Builder::default().level(log::LevelFilter::Info).build()
+                    )?;
             }
 
             let window = app.get_webview_window("main").unwrap();
 
-            window.on_window_event(|event| match event {
-                WindowEvent::Resized(..) => std::thread::sleep(std::time::Duration::from_nanos(1)),
-                _ => {}
+            window.on_window_event(|event| {
+                match event {
+                    WindowEvent::Resized(..) =>
+                        std::thread::sleep(std::time::Duration::from_nanos(1)),
+                    _ => {}
+                }
             });
 
-            tauri_plugin_deep_link::register("solaris", move |request| {
-                let re = Regex::new(r"solaris://([^/]+)").unwrap();
+            tauri_plugin_deep_link
+                ::register("solaris", move |request| {
+                    let re = Regex::new(r"solaris://([^/]+)").unwrap();
 
-                if let Err(err) = window.set_focus() {
-                    eprintln!("Could not set focus on main window: {:?}", err);
-                }
-
-                if let Some(captures) = re.captures(request.as_str()) {
-                    if let Some(result) = captures.get(1) {
-                        window
-                            .eval(&format!("window.location.hash = '{}'", result.as_str()))
-                            .unwrap();
+                    if let Err(err) = window.set_focus() {
+                        eprintln!("Could not set focus on main window: {:?}", err);
                     }
-                }
-            })
-            .unwrap();
+
+                    if let Some(captures) = re.captures(request.as_str()) {
+                        if let Some(result) = captures.get(1) {
+                            window
+                                .eval(&format!("window.location.hash = '{}'", result.as_str()))
+                                .unwrap();
+                        }
+                    }
+                })
+                .unwrap();
             Ok(())
         })
-        .invoke_handler(tauri::generate_handler![
-            search_for_version,
-            get_fortnite_processid,
-            check_file_exists,
-            exit_all,
-            check_game_exists,
-            check_file_exists_and_size,
-            rich_presence,
-            experience,
-            download_game_file,
-            download_build,
-            is_download_active,
-            is_extraction_active,
-            cancel_download,
-            cancel_extraction,
-            delete_file,
-            get_default_install_dir,
-            get_available_versions,
-            get_manifest_for_version,
-            get_user_ip
-        ])
+        .invoke_handler(
+            tauri::generate_handler![
+                search_for_version,
+                get_fortnite_processid,
+                check_file_exists,
+                exit_all,
+                check_game_exists,
+                check_file_exists_and_size,
+                rich_presence,
+                experience,
+                download_game_file,
+                download_build,
+                is_download_active,
+                is_extraction_active,
+                cancel_download,
+                cancel_extraction,
+                delete_file,
+                get_default_install_dir,
+                get_available_versions,
+                get_manifest_for_version,
+                get_user_ip
+            ]
+        )
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
