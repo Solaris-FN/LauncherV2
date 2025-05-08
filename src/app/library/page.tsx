@@ -14,7 +14,6 @@ export default function Library() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [hoveredBuild, setHoveredBuild] = useState<string | null>(null);
-  const [isAddHovered, setIsAddHovered] = useState(false);
   const [handlers, setHandlers] = useState<any>(null);
   const [isDownloadModalOpen, setIsDownloadModalOpen] = useState(false);
   const [isBrowseBuildsModalOpen, setIsBrowseBuildsModalOpen] = useState(false);
@@ -181,9 +180,7 @@ export default function Library() {
           </div>
         </div>
         <div
-          className="fixed bottom-6 right-6 flex gap-3"
-          onMouseEnter={() => setIsAddHovered(true)}
-          onMouseLeave={() => setIsAddHovered(false)}>
+          className="fixed bottom-6 right-6 flex gap-3">
           <button
             onClick={() => handleAddBuild()}
             disabled={isLoading}
