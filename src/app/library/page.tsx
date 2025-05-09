@@ -57,6 +57,21 @@ export default function Library() {
     }
   }, [handlers]);
 
+  useEffect(() => {
+    const allDownloadsComplete =
+      downloadProgress.files.length === 0 ||
+      (downloadProgress.files.length > 0 &&
+        downloadProgress.completed.length === downloadProgress.files.length);
+
+    if (!allDownloadsComplete) return;
+
+    const timer = setTimeout(() => {
+      setIsDownloadModalOpen(false);
+    }, 1500);
+
+    return () => clearTimeout(timer);
+  }, [downloadProgress.completed, downloadProgress.files]);
+
   const handlelaunchBuild = async (path: string, version: string) => {
     if (handlers && handlers.handleLaunchBuild) {
       if (activeBuild === path) {
@@ -115,8 +130,9 @@ export default function Library() {
               return (
                 <div
                   key={index}
-                  className={`bg-[#191b1c]/40 rounded-lg overflow-hidden shadow-lg transition-all duration-300 ${isActive ? "ring-2 ring-gray-400/40" : "hover:shadow-3xl"
-                    }`}
+                  className={`bg-[#191b1c]/40 rounded-lg overflow-hidden shadow-lg transition-all duration-300 ${
+                    isActive ? "ring-2 ring-gray-400/40" : "hover:shadow-3xl"
+                  }`}
                   onMouseEnter={() => setHoveredBuild(build.path)}
                   onMouseLeave={() => setHoveredBuild(null)}>
                   <button
@@ -151,8 +167,8 @@ export default function Library() {
                           {versionNumber <= 10.4
                             ? "Chapter 1"
                             : versionNumber <= 18.4
-                              ? "Chapter 2"
-                              : "Chapter 3"}
+                            ? "Chapter 2"
+                            : "Chapter 3"}
                         </span>
                       </div>
                       <div className="flex justify-between items-center">
@@ -179,8 +195,7 @@ export default function Library() {
             })}
           </div>
         </div>
-        <div
-          className="fixed bottom-6 right-6 flex gap-3">
+        <div className="fixed bottom-6 right-6 flex gap-3">
           <button
             onClick={() => handleAddBuild()}
             disabled={isLoading}
@@ -195,12 +210,14 @@ export default function Library() {
             )}
           </button>
 
-          {<button
-            onClick={() => setIsBrowseBuildsModalOpen(true)}
-            className="flex items-center px-4 py-2 bg-[#2a1e36]/70 text-white border border-[#3d2a4f]/50 rounded-md hover:bg-[#3d2a4f]/70 transition-colors focus:outline-none focus:ring-2 focus:ring-purple-400/50">
-            <Search className="h-4 w-4 mr-2" />
-            Download
-          </button>}
+          {
+            <button
+              onClick={() => setIsBrowseBuildsModalOpen(true)}
+              className="flex items-center px-4 py-2 bg-[#2a1e36]/70 text-white border border-[#3d2a4f]/50 rounded-md hover:bg-[#3d2a4f]/70 transition-colors focus:outline-none focus:ring-2 focus:ring-purple-400/50">
+              <Search className="h-4 w-4 mr-2" />
+              Download
+            </button>
+          }
         </div>
       </motion.main>
 
@@ -287,7 +304,7 @@ export default function Library() {
                       {Math.round(
                         downloadProgress.files.length > 0
                           ? (downloadProgress.completed.length / downloadProgress.files.length) *
-                          100
+                              100
                           : 0
                       )}
                       % complete
@@ -298,11 +315,12 @@ export default function Library() {
                     <motion.div
                       initial={{ width: 0 }}
                       animate={{
-                        width: `${downloadProgress.files.length > 0
-                          ? (downloadProgress.completed.length / downloadProgress.files.length) *
-                          100
-                          : 0
-                          }%`,
+                        width: `${
+                          downloadProgress.files.length > 0
+                            ? (downloadProgress.completed.length / downloadProgress.files.length) *
+                              100
+                            : 0
+                        }%`,
                       }}
                       transition={{ type: "spring", damping: 20, stiffness: 60 }}
                       className="h-full rounded-full bg-purple-500"
@@ -316,9 +334,9 @@ export default function Library() {
                       const isCurrentFile =
                         !downloadProgress.completed.includes(file) &&
                         downloadProgress.files.indexOf(file) ===
-                        downloadProgress.files.findIndex(
-                          (f) => !downloadProgress.completed.includes(f)
-                        );
+                          downloadProgress.files.findIndex(
+                            (f) => !downloadProgress.completed.includes(f)
+                          );
 
                       const isLastCompleted =
                         downloadProgress.completed.length === downloadProgress.files.length &&
@@ -343,12 +361,13 @@ export default function Library() {
                             enter: { duration: 0.3 },
                             exit: { duration: 0.2 },
                           }}
-                          className={`flex items-center rounded-lg ${isError
-                            ? "bg-red-900/30"
-                            : isCompleted
+                          className={`flex items-center rounded-lg ${
+                            isError
+                              ? "bg-red-900/30"
+                              : isCompleted
                               ? "bg-[#2a1e36]/80"
                               : "bg-[#2a1e36]/40"
-                            } p-2.5 transition-colors`}>
+                          } p-2.5 transition-colors`}>
                           <div className="mr-3 flex h-8 w-8 items-center justify-center rounded-md bg-[#3d2a4f]/50 text-gray-300">
                             <FileText className="h-4 w-4" />
                           </div>
@@ -361,8 +380,9 @@ export default function Library() {
                               </p>
                               {statusMessage && (
                                 <p
-                                  className={`text-xs mt-1 ${isError ? "text-red-400" : "text-gray-400"
-                                    }`}>
+                                  className={`text-xs mt-1 ${
+                                    isError ? "text-red-400" : "text-gray-400"
+                                  }`}>
                                   {statusMessage}
                                 </p>
                               )}
