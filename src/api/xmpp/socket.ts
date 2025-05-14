@@ -51,7 +51,7 @@ export const createXMPP = async (token: string, accountId: string, displayName: 
     const parser = new DOMParser();
     const doc = parser.parseFromString(msg.data as any, "text/xml");
     const name = doc.documentElement.nodeName;
-
+    console.log("XMPP message:", name, msg.data);
     switch (name) {
       case "open":
         isInitialized = true;
@@ -68,6 +68,28 @@ export const createXMPP = async (token: string, accountId: string, displayName: 
           if (mechanisms.includes("PLAIN")) {
             const authString = btoa(`\0${accountId}\0${token}`);
 
+            await ws.send(
+              `<auth mechanism="PLAIN" xmlns="urn:ietf:params:xml:ns:xmpp-sasl">${authString}</auth>`
+            );
+          }
+        } catch (e) {
+          console.error("Error during XMPP auth:", e);
+        }
+        break;
+      case "features":
+        if (!isInitialized) return;
+        try {
+          let mechanisms: any[] = [];
+
+          const mechanismsElement = doc.getElementsByTagName("mechanisms")[0];
+          if (mechanismsElement) {
+            mechanisms = Array.from(mechanismsElement.getElementsByTagName("method")).map(
+              (m) => m.textContent
+            );
+          }
+
+          if (mechanisms.includes("PLAIN")) {
+            const authString = btoa(`\0${accountId}\0${token}`);
             await ws.send(
               `<auth mechanism="PLAIN" xmlns="urn:ietf:params:xml:ns:xmpp-sasl">${authString}</auth>`
             );
