@@ -74,7 +74,7 @@ export default function Leaderboard() {
     .sort((a, b) => {
       const A = calculateScore(a.eliminations, a.wins);
       const B = calculateScore(b.eliminations, b.wins);
-      return B - A; // Changed to sort in descending order
+      return B - A;
     });
 
   const getRankStyle = (index: number) => {
@@ -124,13 +124,12 @@ export default function Leaderboard() {
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.2, delay: index * 0.1 }}
-                    className={`rounded-xl border ${
-                      index === 0
+                    className={`rounded-xl border ${index === 0
                         ? "bg-gradient-to-b from-yellow-500/10 to-gray-900/80 border-yellow-500/20"
                         : index === 1
-                        ? "bg-gradient-to-b from-gray-700/10 to-gray-900/80 border-gray-600/20"
-                        : "bg-gradient-to-b from-amber-900/10 to-gray-900/80 border-amber-700/20"
-                    } p-4 flex flex-col items-center`}>
+                          ? "bg-gradient-to-b from-gray-700/10 to-gray-900/80 border-gray-600/20"
+                          : "bg-gradient-to-b from-amber-900/10 to-gray-900/80 border-amber-700/20"
+                      } p-4 flex flex-col items-center`}>
                     <div className="w-12 h-12 rounded-full overflow-hidden border border-gray-700 mb-2 bg-gray-800">
                       <img
                         src={player.avatar || "/placeholder.svg"}
@@ -167,9 +166,8 @@ export default function Leaderboard() {
               <div className="overflow-y-auto overflow-x-hidden custom-scrollbar flex-1 rounded-b-xl">
                 <table className="w-full text-sm">
                   <thead
-                    className={`sticky top-0 z-10 transition-opacity duration-200 ${
-                      isScrolled ? "opacity-0" : "opacity-100"
-                    }`}>
+                    className={`sticky top-0 z-10 transition-opacity duration-200 ${isScrolled ? "opacity-0" : "opacity-100"
+                      }`}>
                     <tr>
                       <th className="bg-gray-900/20 py-4 px-4 text-center font-medium text-gray-300 w-12 first:rounded-tl-md">
                         #
