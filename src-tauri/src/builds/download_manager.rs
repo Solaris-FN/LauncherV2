@@ -3,15 +3,15 @@ use futures_util::StreamExt;
 use indicatif::ProgressBar;
 use regex::Regex;
 use reqwest::Client;
-use serde::{Deserialize, Serialize};
-use std::fs::{self, File};
-use std::io::{self, Read, Seek, SeekFrom, Write};
-use std::path::{Path, PathBuf};
+use serde::{ Deserialize, Serialize };
+use std::fs::{ self, File };
+use std::io::{ self, Read, Seek, SeekFrom, Write };
+use std::path::{ Path, PathBuf };
 use std::sync::Arc;
-use std::time::{Duration, Instant};
-use tauri::{AppHandle, Emitter, State, Window, command};
+use std::time::{ Duration, Instant };
+use tauri::{ AppHandle, Emitter, State, Window, command };
 use tokio::fs::File as AsyncFile;
-use tokio::io::{AsyncWriteExt, BufReader, BufWriter};
+use tokio::io::{ AsyncWriteExt, BufReader, BufWriter };
 use tokio::sync::Mutex;
 use tokio::time::timeout;
 
@@ -54,7 +54,7 @@ impl DownloadManager {
             let bytes_diff = last.1 - first.1;
 
             if elapsed > 0.0 {
-                bytes_diff as f64 / elapsed
+                (bytes_diff as f64) / elapsed
             } else {
                 0.0
             }
@@ -149,7 +149,7 @@ fn format_time(seconds: f64) -> String {
 #[command]
 pub async fn is_download_active(
     build_id: String,
-    download_manager: State<'_, DownloadManager>,
+    download_manager: State<'_, DownloadManager>
 ) -> Result<bool, String> {
     let active_downloads = download_manager.active_downloads.lock().await;
     Ok(active_downloads.contains(&build_id))
@@ -158,7 +158,7 @@ pub async fn is_download_active(
 #[command]
 pub async fn is_extraction_active(
     build_id: String,
-    download_manager: State<'_, DownloadManager>,
+    download_manager: State<'_, DownloadManager>
 ) -> Result<bool, String> {
     let active_extractions = download_manager.active_extractions.lock().await;
     Ok(active_extractions.contains(&build_id))
@@ -167,7 +167,7 @@ pub async fn is_extraction_active(
 #[command]
 pub async fn cancel_download(
     build_id: String,
-    download_manager: State<'_, DownloadManager>,
+    download_manager: State<'_, DownloadManager>
 ) -> Result<bool, String> {
     let mut active_downloads = download_manager.active_downloads.lock().await;
     if let Some(index) = active_downloads.iter().position(|id| id == &build_id) {
@@ -182,7 +182,7 @@ pub async fn cancel_download(
 #[command]
 pub async fn cancel_extraction(
     build_id: String,
-    download_manager: State<'_, DownloadManager>,
+    download_manager: State<'_, DownloadManager>
 ) -> Result<bool, String> {
     let mut active_extractions = download_manager.active_extractions.lock().await;
     if let Some(index) = active_extractions.iter().position(|id| id == &build_id) {
@@ -201,20 +201,13 @@ pub async fn get_available_versions() -> Result<Vec<String>, String> {
     let response = client
         .get(&versions_url)
         .timeout(Duration::from_secs(REQUEST_TIMEOUT_SECS))
-        .send()
-        .await
+        .send().await
         .map_err(|e| format!("Network error fetching versions: {}", e))?;
 
     if response.status().is_success() {
-        response
-            .json::<Vec<String>>()
-            .await
-            .map_err(|e| format!("Failed to parse versions: {}", e))
+        response.json::<Vec<String>>().await.map_err(|e| format!("Failed to parse versions: {}", e))
     } else {
-        Err(format!(
-            "Failed to fetch versions: HTTP {}",
-            response.status()
-        ))
+        Err(format!("Failed to fetch versions: HTTP {}", response.status()))
     }
 }
 
@@ -228,51 +221,54 @@ pub async fn get_manifest_for_version(version: String) -> Result<ManifestFile, S
         let client = Client::new();
         let manifest_url = format!(
             "{}/{}/{}.manifest",
-            BASE_URL, extracted_version, extracted_version
+            BASE_URL,
+            extracted_version,
+            extracted_version
         );
 
         let mut retries = 0;
         let mut last_error = String::new();
 
         while retries < MAX_RETRIES {
-            match client
-                .get(&manifest_url)
-                .timeout(Duration::from_secs(REQUEST_TIMEOUT_SECS))
-                .send()
-                .await
+            match
+                client
+                    .get(&manifest_url)
+                    .timeout(Duration::from_secs(REQUEST_TIMEOUT_SECS))
+                    .send().await
             {
                 Ok(response) => {
                     if response.status().is_success() {
                         return response
-                            .json::<ManifestFile>()
-                            .await
+                            .json::<ManifestFile>().await
                             .map_err(|e| format!("Failed to parse manifest: {}", e));
                     } else if response.status().is_server_error() {
                         last_error = format!("Server error: HTTP {}", response.status());
                         retries += 1;
-                        tokio::time::sleep(Duration::from_millis(RETRY_DELAY_MS * retries as u64))
-                            .await;
+                        tokio::time::sleep(
+                            Duration::from_millis(RETRY_DELAY_MS * (retries as u64))
+                        ).await;
                         continue;
                     } else {
-                        return Err(format!(
-                            "Failed to fetch manifest: HTTP {}",
-                            response.status()
-                        ));
+                        return Err(format!("Failed to fetch manifest: HTTP {}", response.status()));
                     }
                 }
                 Err(e) => {
                     last_error = format!("Network error: {}", e);
                     retries += 1;
-                    tokio::time::sleep(Duration::from_millis(RETRY_DELAY_MS * retries as u64))
-                        .await;
+                    tokio::time::sleep(
+                        Duration::from_millis(RETRY_DELAY_MS * (retries as u64))
+                    ).await;
                 }
             }
         }
 
-        Err(format!(
-            "Failed to fetch manifest after {} retries. Last error: {}",
-            MAX_RETRIES, last_error
-        ))
+        Err(
+            format!(
+                "Failed to fetch manifest after {} retries. Last error: {}",
+                MAX_RETRIES,
+                last_error
+            )
+        )
     } else {
         Err("Version format is incorrect".to_string())
     }
@@ -282,7 +278,7 @@ pub async fn get_manifest_for_version(version: String) -> Result<ManifestFile, S
 pub async fn download_build(
     window: Window,
     request: DownloadRequest,
-    download_manager: State<'_, DownloadManager>,
+    download_manager: State<'_, DownloadManager>
 ) -> Result<DownloadResult, String> {
     let build_id = request.build_id.clone();
 
@@ -301,7 +297,8 @@ pub async fn download_build(
     let dest_path = Path::new(&request.destination);
     if let Some(parent) = dest_path.parent() {
         if !parent.exists() {
-            std::fs::create_dir_all(parent)
+            std::fs
+                ::create_dir_all(parent)
                 .map_err(|e| format!("Failed to create destination directory: {}", e))?;
         }
     }
@@ -317,9 +314,8 @@ pub async fn download_build(
                 build_id.clone(),
                 &version,
                 &temp_dest,
-                &download_manager,
-            )
-            .await
+                &download_manager
+            ).await
         } else {
             Err("Version is required for manifest-based download".into())
         }
@@ -329,9 +325,8 @@ pub async fn download_build(
             build_id.clone(),
             &request.url,
             &temp_dest,
-            &download_manager,
-        )
-        .await
+            &download_manager
+        ).await
     };
 
     {
@@ -344,7 +339,8 @@ pub async fn download_build(
 
     match download_result {
         Ok(_) => {
-            let file_metadata = fs::metadata(&temp_dest)
+            let file_metadata = fs
+                ::metadata(&temp_dest)
                 .map_err(|e| format!("Failed to verify downloaded file: {}", e))?;
 
             if file_metadata.len() == 0 && !use_manifest {
@@ -356,7 +352,8 @@ pub async fn download_build(
                 let _ = fs::remove_file(&request.destination);
             }
 
-            fs::rename(&temp_dest, &request.destination)
+            fs
+                ::rename(&temp_dest, &request.destination)
                 .map_err(|e| format!("Failed to finalize download: {}", e))?;
 
             Ok(DownloadResult {
@@ -379,11 +376,13 @@ async fn download_manifest(
     build_id: String,
     version: &str,
     install_path: &str,
-    download_manager: &State<'_, DownloadManager>,
+    download_manager: &State<'_, DownloadManager>
 ) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     let manifest = match get_manifest_for_version(version.to_string()).await {
         Ok(manifest) => manifest,
-        Err(e) => return Err(format!("Failed to get manifest: {}", e).into()),
+        Err(e) => {
+            return Err(format!("Failed to get manifest: {}", e).into());
+        }
     };
 
     let total_size = manifest.size;
@@ -401,7 +400,9 @@ async fn download_manifest(
     let re = Regex::new(r"Release-(\d+\.\d+)")?;
     let extracted_version = match re.captures(version) {
         Some(caps) => caps.get(1).unwrap().as_str().to_string(),
-        None => return Err("Version extraction failed".into()),
+        None => {
+            return Err("Version extraction failed".into());
+        }
     };
 
     let base_path = Path::new(install_path);
@@ -445,57 +446,58 @@ async fn download_manifest(
                                     retries += 1;
                                     if retries >= MAX_RETRIES {
                                         let _ = tokio::fs::remove_file(&temp_file_path).await;
-                                        return Err(format!(
-                                            "Failed to download chunk data: {}",
-                                            e
-                                        )
-                                        .into());
+                                        return Err(
+                                            format!("Failed to download chunk data: {}", e).into()
+                                        );
                                     }
-                                    tokio::time::sleep(Duration::from_millis(
-                                        RETRY_DELAY_MS * retries as u64,
-                                    ))
-                                    .await;
+                                    tokio::time::sleep(
+                                        Duration::from_millis(RETRY_DELAY_MS * (retries as u64))
+                                    ).await;
                                 }
                             }
                         } else if response.status().is_server_error() {
                             retries += 1;
                             if retries >= MAX_RETRIES {
                                 let _ = tokio::fs::remove_file(&temp_file_path).await;
-                                return Err(format!(
-                                    "Failed to download chunk {}: HTTP {}",
-                                    chunk_id,
-                                    response.status()
-                                )
-                                .into());
+                                return Err(
+                                    format!(
+                                        "Failed to download chunk {}: HTTP {}",
+                                        chunk_id,
+                                        response.status()
+                                    ).into()
+                                );
                             }
-                            tokio::time::sleep(Duration::from_millis(
-                                RETRY_DELAY_MS * retries as u64,
-                            ))
-                            .await;
+                            tokio::time::sleep(
+                                Duration::from_millis(RETRY_DELAY_MS * (retries as u64))
+                            ).await;
                         } else {
                             // Client error, don't retry
                             // Clean up temp file
                             let _ = tokio::fs::remove_file(&temp_file_path).await;
-                            return Err(format!(
-                                "Failed to download chunk {}: HTTP {}",
-                                chunk_id,
-                                response.status()
-                            )
-                            .into());
+                            return Err(
+                                format!(
+                                    "Failed to download chunk {}: HTTP {}",
+                                    chunk_id,
+                                    response.status()
+                                ).into()
+                            );
                         }
                     }
                     Err(e) => {
                         retries += 1;
                         if retries >= MAX_RETRIES {
                             let _ = tokio::fs::remove_file(&temp_file_path).await;
-                            return Err(format!(
-                                "Network error downloading chunk {}: {}",
-                                chunk_id, e
-                            )
-                            .into());
+                            return Err(
+                                format!(
+                                    "Network error downloading chunk {}: {}",
+                                    chunk_id,
+                                    e
+                                ).into()
+                            );
                         }
-                        tokio::time::sleep(Duration::from_millis(RETRY_DELAY_MS * retries as u64))
-                            .await;
+                        tokio::time::sleep(
+                            Duration::from_millis(RETRY_DELAY_MS * (retries as u64))
+                        ).await;
                     }
                 }
             }
@@ -511,9 +513,7 @@ async fn download_manifest(
             completed_size += decompressed_data.len() as i64;
             let percentage = ((completed_size as f64) / (total_size as f64)) * 100.0;
 
-            let speed = download_manager
-                .update_speed_data(&build_id, completed_size as u64)
-                .await;
+            let speed = download_manager.update_speed_data(&build_id, completed_size as u64).await;
             let remaining_bytes = total_size - completed_size;
             let eta_seconds = if speed > 0.0 {
                 (remaining_bytes as f64) / speed
@@ -522,18 +522,15 @@ async fn download_manifest(
             };
             let eta = format_time(eta_seconds);
 
-            if last_update.elapsed().as_millis() > UPDATE_INTERVAL_MS as u128 {
-                let _ = window.emit(
-                    "download:progress",
-                    DownloadProgress {
-                        build_id: build_id.clone(),
-                        percentage,
-                        downloaded_bytes: completed_size as u64,
-                        total_bytes: total_size as u64,
-                        speed,
-                        eta,
-                    },
-                );
+            if last_update.elapsed().as_millis() > (UPDATE_INTERVAL_MS as u128) {
+                let _ = window.emit("download:progress", DownloadProgress {
+                    build_id: build_id.clone(),
+                    percentage,
+                    downloaded_bytes: completed_size as u64,
+                    total_bytes: total_size as u64,
+                    speed,
+                    eta,
+                });
 
                 last_update = std::time::Instant::now();
             }
@@ -549,17 +546,14 @@ async fn download_manifest(
         tokio::fs::rename(&temp_file_path, &file_path).await?;
     }
 
-    let _ = window.emit(
-        "download:progress",
-        DownloadProgress {
-            build_id: build_id.clone(),
-            percentage: 100.0,
-            downloaded_bytes: total_size as u64,
-            total_bytes: total_size as u64,
-            speed: 0.0,
-            eta: "0s".to_string(),
-        },
-    );
+    let _ = window.emit("download:progress", DownloadProgress {
+        build_id: build_id.clone(),
+        percentage: 100.0,
+        downloaded_bytes: total_size as u64,
+        total_bytes: total_size as u64,
+        speed: 0.0,
+        eta: "0s".to_string(),
+    });
 
     let _ = window.emit("download:completed", build_id);
 
@@ -571,7 +565,7 @@ async fn download_file(
     build_id: String,
     url: &str,
     destination: &str,
-    download_manager: &State<'_, DownloadManager>,
+    download_manager: &State<'_, DownloadManager>
 ) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     let client = Client::builder()
         .pool_max_idle_per_host(20)
@@ -592,8 +586,9 @@ async fn download_file(
                 } else if res.status().is_server_error() {
                     last_error = format!("Server error: HTTP {}", res.status());
                     retries += 1;
-                    tokio::time::sleep(Duration::from_millis(RETRY_DELAY_MS * retries as u64))
-                        .await;
+                    tokio::time::sleep(
+                        Duration::from_millis(RETRY_DELAY_MS * (retries as u64))
+                    ).await;
                 } else {
                     return Err(format!("Failed to download file: HTTP {}", res.status()).into());
                 }
@@ -602,13 +597,15 @@ async fn download_file(
                 last_error = format!("Network error: {}", e);
                 retries += 1;
                 if retries >= MAX_RETRIES {
-                    return Err(format!(
-                        "Failed to download after {} attempts. Last error: {}",
-                        MAX_RETRIES, last_error
-                    )
-                    .into());
+                    return Err(
+                        format!(
+                            "Failed to download after {} attempts. Last error: {}",
+                            MAX_RETRIES,
+                            last_error
+                        ).into()
+                    );
                 }
-                tokio::time::sleep(Duration::from_millis(RETRY_DELAY_MS * retries as u64)).await;
+                tokio::time::sleep(Duration::from_millis(RETRY_DELAY_MS * (retries as u64))).await;
             }
         }
     }
@@ -651,10 +648,11 @@ async fn download_file(
                 downloaded_bytes += chunk.len() as u64;
                 last_download_time = std::time::Instant::now();
 
-                if last_update.elapsed().as_millis() > UPDATE_INTERVAL_MS as u128 {
-                    let speed = download_manager
-                        .update_speed_data(&build_id, downloaded_bytes)
-                        .await;
+                if last_update.elapsed().as_millis() > (UPDATE_INTERVAL_MS as u128) {
+                    let speed = download_manager.update_speed_data(
+                        &build_id,
+                        downloaded_bytes
+                    ).await;
 
                     let (percentage, eta) = if has_content_length && total_size > 0 {
                         let percentage: f64 =
@@ -670,17 +668,14 @@ async fn download_file(
                         (0.0, "Unknown".to_string())
                     };
 
-                    let _ = window.emit(
-                        "download:progress",
-                        DownloadProgress {
-                            build_id: build_id.clone(),
-                            percentage,
-                            downloaded_bytes,
-                            total_bytes: total_size,
-                            speed,
-                            eta,
-                        },
-                    );
+                    let _ = window.emit("download:progress", DownloadProgress {
+                        build_id: build_id.clone(),
+                        percentage,
+                        downloaded_bytes,
+                        total_bytes: total_size,
+                        speed,
+                        eta,
+                    });
 
                     last_update = std::time::Instant::now();
                 }
@@ -723,8 +718,9 @@ async fn download_file(
 
 #[command]
 pub fn get_default_install_dir() -> Result<String, String> {
-    let home_dir =
-        dirs::home_dir().ok_or_else(|| "Could not determine home directory".to_string())?;
+    let home_dir = dirs
+        ::home_dir()
+        .ok_or_else(|| "Could not determine home directory".to_string())?;
     let default_dir = home_dir.join("Solaris").join("Builds");
 
     if !default_dir.exists() {
