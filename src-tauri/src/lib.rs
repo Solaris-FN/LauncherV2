@@ -324,14 +324,14 @@ fn experience(
         );
 
         // let _ = std::fs::copy(
-        //     r"C:\Users\andrew\source\repos\Paradise\x64\Release\Paradise.dll",
+        //     r"C:\Users\andrew\RiderProjects\Solaris\Asteria\x64\Release\Asteria.dll",
         //     &game_dll
         // );
 
         if version.contains("14") {
-            let _ = download_file("https://cdn.solarisfn.org/ParadiseS14.dll", &game_dll);
+            let _ = download_file("https://cdn.solarisfn.org/Asteria.vmp.dll", &game_dll);
         } else {
-            let _ = download_file("https://cdn.solarisfn.org/Asteria.dll", &game_dll);
+            let _ = download_file("https://cdn.solarisfn.org/ParadiseS14.dll", &game_dll);
         }
 
         let dlls = [
