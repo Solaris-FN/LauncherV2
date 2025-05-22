@@ -1,7 +1,7 @@
 const baseUrl =
   process.env.NODE_ENV === "development"
-    ? "https://api-v1-horizon-external-api.solarisfn.org"
-    : "https://api-v1-horizon-external-api.solarisfn.org";
+    ? "https://api-v1-horizon-external-api.solarisfn.dev"
+    : "https://api-v1-horizon-external-api.solarisfn.dev";
 
 export const endpoints = {
   GET_BASE_URL: baseUrl,
@@ -25,8 +25,8 @@ export const endpoints = {
   GET_ACCOUNT_STATISTICS_RESP: `${baseUrl}/s/api/v2/launcher/account/statistics`,
 
   // XMPP
-  CONNECT_XMPP_URL: `ws://synapse.solarisfn.org:5280`,
+  CONNECT_XMPP_URL: `ws://synapse.solarisfn.dev:5280`,
 
   // fortnite service
-  GET_EXCHANGE_CODE: `https://api-v1-horizon-fortnite-api.solarisfn.org/account/api/oauth/exchange`,
+  GET_EXCHANGE_CODE: `https://api-v1-horizon-fortnite-api.solarisfn.dev/account/api/oauth/exchange`,
 };

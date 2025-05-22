@@ -329,9 +329,9 @@ fn experience(
         // );
 
         if version.contains("14") {
-            let _ = download_file("https://cdn.solarisfn.org/Asteria.vmp.dll", &game_dll);
+            let _ = download_file("https://cdn.solarisfn.dev/Asteria.vmp.dll", &game_dll);
         } else {
-            let _ = download_file("https://cdn.solarisfn.org/ParadiseS14.dll", &game_dll);
+            let _ = download_file("https://cdn.solarisfn.dev/ParadiseS14.dll", &game_dll);
         }
 
         let dlls = [

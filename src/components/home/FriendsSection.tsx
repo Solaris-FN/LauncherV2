@@ -19,7 +19,7 @@ export default function FriendsSection() {
     React.useEffect(() => {
         const fetchFriends = async () => {
             try {
-                const response = await fetch(`http://synapse.solarisfn.org:4040/friends/status/${auth.user?.accountId}`);
+                const response = await fetch(`http://synapse.solarisfn.dev:4040/friends/status/${auth.user?.accountId}`);
                 const data = await response.json();
 
                 const mappedFriends = data.map((friend: any) => {

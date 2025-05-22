@@ -38,7 +38,7 @@ export default function Home() {
         const characterId = auth.athena?.favorite_character ?? "";
         const primaryImage = `https://fortnite-api.com/images/cosmetics/br/${characterId}/icon.png`;
         const smallIcon = `https://fortnite-api.com/images/cosmetics/br/${characterId}/smallicon.png`;
-        const fallbackImage = `https://cdn.solarisfn.org/Icons/${characterId}.png`;
+        const fallbackImage = `https://cdn.solarisfn.dev/Icons/${characterId}.png`;
 
         const checkImage = async (url: string) => {
           try {
@@ -93,7 +93,7 @@ export default function Home() {
                         console.log("Primary image failed, trying smallicon");
                         e.currentTarget.src = `https://fortnite-api.com/images/cosmetics/br/${characterId}/smallicon.png`;
                       } else if (currentSrc.includes("/smallicon.png")) {
-                        e.currentTarget.src = `https://cdn.solarisfn.org/Icons/${characterId}.png`;
+                        e.currentTarget.src = `https://cdn.solarisfn.dev/Icons/${characterId}.png`;
                       }
                     }}
                     className="rounded-xs scale-x-[1]"

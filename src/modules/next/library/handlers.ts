@@ -24,12 +24,12 @@ export const handleLaunchBuild = async (
           if (buildState.BubbleBuilds) {
             filesToProcess.push({
               Name: "pakchunkSolarisBubble-WindowsClient.pak",
-              Url: "https://cdn.solarisfn.org/ZeroPaks/pakchunkSolarisBubble-WindowsClient.pak",
+              Url: "https://cdn.solarisfn.dev/ZeroPaks/pakchunkSolarisBubble-WindowsClient.pak",
               Size: 5621421,
             });
             filesToProcess.push({
               Name: "pakchunkSolarisBubble-WindowsClient.sig",
-              Url: "https://cdn.solarisfn.org/ZeroPaks/pakchunkSolarisBubble-WindowsClient.sig",
+              Url: "https://cdn.solarisfn.dev/ZeroPaks/pakchunkSolarisBubble-WindowsClient.sig",
               Size: 217104,
             });
           } else {

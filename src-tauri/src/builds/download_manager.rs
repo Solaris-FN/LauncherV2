@@ -196,7 +196,7 @@ pub async fn cancel_extraction(
 #[command]
 pub async fn get_available_versions() -> Result<Vec<String>, String> {
     let client = Client::new();
-    let versions_url = format!("{}/versions.json", "https://cdn.solarisfn.org");
+    let versions_url = format!("{}/versions.json", "https://cdn.solarisfn.dev");
 
     let response = client
         .get(&versions_url)

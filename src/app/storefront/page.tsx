@@ -330,7 +330,7 @@ export default function Shop() {
                               console.log("Primary image failed, trying smallicon");
                               e.currentTarget.src = `https://fortnite-api.com/images/cosmetics/br/${characterId}/smallicon.png`;
                             } else if (currentSrc.includes("/smallicon.png")) {
-                              e.currentTarget.src = `https://cdn.solarisfn.org/Icons/${characterId}.png`;
+                              e.currentTarget.src = `https://cdn.solarisfn.dev/Icons/${characterId}.png`;
                             }
                           }}
                           alt={item?.name || "Unnamed Item"}
