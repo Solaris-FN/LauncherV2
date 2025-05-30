@@ -152,10 +152,9 @@ export async function processFilesWithProgress(
     if (!file) continue;
 
     console.log(`Processing: ${file.Name}`);
-    const downloadPath =
-      file.Name.includes(".pak") || file.Name.includes(".sig")
-        ? `${path}\\FortniteGame\\Content\\Paks\\`
-        : `${path}\\`;
+    const downloadPath = [".pak", ".sig", ".utoc", ".ucas"].some((ext) => file.Name.includes(ext))
+      ? `${path}\\FortniteGame\\Content\\Paks\\`
+      : `${path}\\`;
 
     try {
       const exists = await invoke("check_file_exists_and_size", {
