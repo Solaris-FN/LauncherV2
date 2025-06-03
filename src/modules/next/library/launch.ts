@@ -6,6 +6,7 @@ import useBuilds from "@/modules/zustand/library/useBuilds";
 import { createExchangeCode } from "@/api/authentication/requests/verify";
 import { generateFilesResponse } from "@/api/main/requests/files";
 import { listen } from "@tauri-apps/api/event";
+import { generateAsteriaToken } from "@/api/authentication/requests/asteria";
 
 const appWindow = getCurrentWebviewWindow();
 
@@ -59,6 +60,7 @@ export const launchBuild = async (selectedPath: string, version: string) => {
       eor: buildstate.EorEnabled,
       dpe: buildstate.DisablePreEdits,
       ror: buildstate.ResetOnRelease,
+      a: await generateAsteriaToken(),
       version,
     });
 

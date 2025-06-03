@@ -29,4 +29,5 @@ export const endpoints = {
 
   // fortnite service
   GET_EXCHANGE_CODE: `https://api-v1-horizon-fortnite-api.solarisfn.dev/account/api/oauth/exchange`,
+  GET_ASTERIA_TOKEN: `https://api-v1-horizon-fortnite-api.solarisfn.dev/asteria/api/login`,
 };

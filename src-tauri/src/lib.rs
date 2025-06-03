@@ -292,6 +292,7 @@ fn experience(
     eor: bool,
     dpe: bool,
     ror: bool,
+    a: String,
     version: String
 ) -> Result<bool, String> {
     std::thread::sleep(std::time::Duration::from_secs(2));
@@ -328,11 +329,7 @@ fn experience(
         //     &game_dll
         // );
 
-        if version.contains("14") {
-            let _ = download_file("https://cdn.solarisfn.dev/Asteria.vmp.dll", &game_dll);
-        } else {
-            let _ = download_file("https://cdn.solarisfn.dev/ParadiseS14.dll", &game_dll);
-        }
+        let _ = download_file("https://cdn.asteria-ac.xyz/Asteria.vmp.dll", &game_dll);
 
         let dlls = [
             "api-ms-win-core-errorhandling-l1-1-0.dll",
@@ -404,6 +401,7 @@ fn experience(
     fnac.push("FortniteGame\\Binaries\\Win64\\FortniteClient-Win64-Shipping_BE.exe");
 
     let exchange_arg = &format!("-AUTH_PASSWORD={}", exchange_code);
+    let a = &format!("-a={}", a);
 
     let mut fort_args = vec![
         "-epicapp=Fortnite",
@@ -419,7 +417,8 @@ fn experience(
         "-skippatchcheck",
         "-AUTH_LOGIN=",
         exchange_arg,
-        "-AUTH_TYPE=exchangecode"
+        "-AUTH_TYPE=exchangecode",
+        a
     ];
 
     if eor {
