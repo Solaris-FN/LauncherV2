@@ -60,7 +60,7 @@ export const launchBuild = async (selectedPath: string, version: string) => {
       eor: buildstate.EorEnabled,
       dpe: buildstate.DisablePreEdits,
       ror: buildstate.ResetOnRelease,
-      a: await generateAsteriaToken(),
+      a: (await generateAsteriaToken()).data,
       version,
     });
 
