@@ -23,14 +23,24 @@ export const handleLaunchBuild = async (
         if (filesToProcess.length > 0) {
           if (buildState.BubbleBuilds) {
             filesToProcess.push({
-              Name: "pakchunkSolarisBubble-WindowsClient.pak",
-              Url: "https://cdn.solarisfn.dev/FracturedPaks/pakchunkSolarisBubble-WindowsClient.pak",
-              Size: 5621421,
+              Name: "pakchunkSolarisBubble-WindowsNoEditor_P.pak",
+              Url: "https://cdn.solarisfn.dev/FracturedPaks/pakchunkSolarisBubble-WindowsNoEditor_P.pak",
+              Size: 339,
             });
             filesToProcess.push({
-              Name: "pakchunkSolarisBubble-WindowsClient.sig",
-              Url: "https://cdn.solarisfn.dev/FracturedPaks/pakchunkSolarisBubble-WindowsClient.sig",
-              Size: 217104,
+              Name: "pakchunkSolarisBubble-WindowsNoEditor_P.utoc",
+              Url: "https://cdn.solarisfn.dev/FracturedPaks/pakchunkSolarisBubble-WindowsNoEditor_P.utoc",
+              Size: 6203,
+            });
+            filesToProcess.push({
+              Name: "pakchunkSolarisBubble-WindowsNoEditor_P.ucas",
+              Url: "https://cdn.solarisfn.dev/FracturedPaks/pakchunkSolarisBubble-WindowsNoEditor_P.ucas",
+              Size: 5743840,
+            });
+            filesToProcess.push({
+              Name: "pakchunkSolarisBubble-WindowsNoEditor_P.sig",
+              Url: "https://cdn.solarisfn.dev/FracturedPaks/pakchunkSolarisBubble-WindowsNoEditor_P.sig",
+              Size: 4660,
             });
           } else {
             try {
