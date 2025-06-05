@@ -47,12 +47,14 @@ const Switch: React.FC<SwitchProps> = ({ checked, onChange, label }) => {
     <div className="flex items-center justify-between">
       {label && <span className="text-gray-400">{label}</span>}
       <div
-        className={`relative inline-block w-12 h-6 rounded-full cursor-pointer transition-colors duration-200 ease-in-out ${checked ? "bg-purple-600" : "bg-gray-600"
-          }`}
+        className={`relative inline-block w-12 h-6 rounded-full cursor-pointer transition-colors duration-200 ease-in-out ${
+          checked ? "bg-purple-600" : "bg-gray-600"
+        }`}
         onClick={() => onChange(!checked)}>
         <span
-          className={`absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition-transform duration-200 ease-in-out ${checked ? "transform translate-x-6" : ""
-            }`}
+          className={`absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition-transform duration-200 ease-in-out ${
+            checked ? "transform translate-x-6" : ""
+          }`}
         />
       </div>
     </div>
@@ -258,21 +260,21 @@ export default function Settings() {
                     <CardTitle className="text-gray-400 text-xl">Preferences</CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-6">
-                    <Switch
+                    {/* <Switch
                       checked={editOnRelease}
                       onChange={handleEditOnReleaseChange}
                       label="Edit On Release"
-                    />
+                    /> */}
                     <Switch
                       checked={resetOnRelease}
                       onChange={handleResetOnReleaseChange}
                       label="Reset On Release"
                     />
-                    <Switch
+                    {/* <Switch
                       checked={disablePreEdit}
                       onChange={handleDisablePreEditChange}
                       label="Disable Pre-Edits"
-                    />
+                    /> */}
                     <Switch
                       checked={bubbleBuilds}
                       onChange={handleBubbleBuildsChange}

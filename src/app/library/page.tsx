@@ -209,7 +209,7 @@ export default function Library() {
               </>
             )}
           </button>
-
+          {/* 
           {
             <button
               onClick={() => setIsBrowseBuildsModalOpen(true)}
@@ -217,7 +217,7 @@ export default function Library() {
               <Search className="h-4 w-4 mr-2" />
               Download
             </button>
-          }
+          } */}
         </div>
       </motion.main>
 

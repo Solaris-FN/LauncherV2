@@ -21,6 +21,8 @@ export const generateAsteriaToken = async (): Promise<ResponseOrError<string>> =
     };
   }
 
+  console.log(response.data);
+
   return {
     success: true,
     data: response.data,
